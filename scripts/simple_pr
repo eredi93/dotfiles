@@ -36,8 +36,8 @@ def git_push(branch_name):
 
 
 def git_pull_request(pr_name):
-    response = sys_call(['hub', 'pull-request', '-m', '"{}'.format(pr_name)])
-    return response.strip('b\'\n')
+    response = sys_call(['hub', 'pull-request', '-m', '"{}"'.format(pr_name)])
+    return response[2:-3] # remove the junk from subprocess b'xxxxxxxxxxxxx\n' 
 
 
 def copy_to_clipboard(msg):
