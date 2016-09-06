@@ -1,0 +1,64 @@
+#! /usr/bin/env python3
+import argparse
+import subprocess
+import sys
+
+
+def get_clipboard():
+    return 'pbcopy'
+
+
+def sys_call(cmd):
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    returncode = p.returncode
+    if returncode != 0:
+        sys.stderr.write('ERROR: got {} when running {}'.format(returncode, cmd))
+        sys.stderr.write('{}\n{}'.format(out, err))
+        sys.exit(returncode)
+    return str(out)
+
+
+def git_checkout(branch_name):
+    sys_call(['git', 'checkout', '-b', branch_name])
+
+
+def git_add():
+    sys_call(['git', 'add', '.'])
+
+
+def git_commit(pr_name):
+    sys_call(['git', 'commit', '-m', pr_name])
+
+
+def git_push(branch_name):
+    sys_call(['git', 'push', 'origin', branch_name])
+
+
+def git_pull_request(pr_name):
+    response = sys_call(['hub', 'pull-request', '-m', '"{}'.format(pr_name)])
+    return response.strip('b\'\n')
+
+
+def copy_to_clipboard(msg):
+    process = subprocess.Popen(
+        get_clipboard(), env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
+    process.communicate(msg.encode('utf-8'))
+
+
+def main(args):
+    pr_name = args.name.strip(' \'"')
+    branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
+    git_checkout(branch_name)
+    git_add()
+    git_commit(pr_name)
+    git_push(branch_name)
+    pr_link = git_pull_request(pr_name)
+    copy_to_clipboard(pr_link)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='create a simple GitHub PR')
+    parser.add_argument('name', help='simple PR name')
+    args = parser.parse_args()
+    main(args)
