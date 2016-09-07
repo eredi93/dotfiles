@@ -1,22 +1,61 @@
 #! /usr/bin/env python3
 import argparse
 import subprocess
+import json
 import sys
+import os
 
 
-def get_clipboard():
-    return 'pbcopy'
-
-
-def sys_call(cmd):
+def sys_call(cmd, return_code=False):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     out, err = p.communicate()
+    if out is not None: out = out.decode('utf-8')
+    if err is not None: err = err.decode('utf-8')
     returncode = p.returncode
+    if return_code is True: return returncode
     if returncode != 0:
-        sys.stderr.write('ERROR: got {} when running {}'.format(returncode, cmd))
-        sys.stderr.write('{}\n{}'.format(out, err))
+        sys.stderr.write('ERROR: got {} when running {}\n'.format(returncode, cmd))
+        if out is not None: sys.stdout.write('{}'.format(out))
+        if err is not None: sys.stderr.write('{}'.format(err))
         sys.exit(returncode)
-    return str(out)
+    return out.strip('\n')
+
+
+def get_slack_token():
+    if 'SLACK_TOKEN' in os.environ:
+        return os.environ['SLACK_TOKEN']
+    try:
+        slack_file = '{}/.slack'.format(os.environ['HOME'])
+        with open(slack_file) as f:
+            config = json.load(f)
+        return config['SLACK_TOKEN'] if 'SLACK_TOKEN' in config else None
+    except FileNotFoundError:
+        return None
+
+
+def is_slack_available():
+    if sys_call(['which', 'slack'], return_code=True) != 0:
+        sys.stderr.write('ERROR: slack not found.')
+        return False
+    if get_slack_token() is None:
+        sys.stderr.write('ERROR: Unable to find slack token.\n')
+        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment' \
+                'variables or in a ~/.slack json formatted file.')
+        return False
+    return True
+
+
+def get_os():
+    return sys_call(['uname']).lower()
+
+
+def get_clipboard(os):
+    if os == 'darwin':
+        return 'pbcopy'
+    elif os == 'linux':
+        return 'pbcopy'
+    else:
+        sys.stderr.write('ERROR: os=>{} is not supported. Unable to get clipboard\n'.format(os))
 
 
 def git_checkout(branch_name):
@@ -37,28 +76,64 @@ def git_push(branch_name):
 
 def git_pull_request(pr_name):
     response = sys_call(['hub', 'pull-request', '-m', '"{}"'.format(pr_name)])
-    return response[2:-3] # remove the junk from subprocess b'xxxxxxxxxxxxx\n' 
+    return response
 
 
-def copy_to_clipboard(msg):
+def git_flow(pr_name, branch_name):
+    git_checkout(branch_name)
+    git_add()
+    git_commit(pr_name)
+    git_push(branch_name)
+    return git_pull_request(pr_name)
+
+
+def send_to_slack(token, channel, msg):
+    slack_cmd = ['slack', '--slack-api-token', token, 'chat', 'postMessage',
+            '--channel', channel, '--as_user', '"true"', '--text', msg]
+    sys_call(slack_cmd)
+
+
+def open_in_chrome(os, url):
+    if os == 'darwin':
+        sys_call(['open', url])
+    elif os == 'linux':
+        sys_call(['xdg-open', url])
+    else:
+        sys.stderr.write('ERROR: os=>{} is not supported. Unable to get browser.'.format(os))
+
+
+def copy_to_clipboard(os, msg):
+    clipboard = get_clipboard(os)
     process = subprocess.Popen(
-        get_clipboard(), env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
+        clipboard, env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
     process.communicate(msg.encode('utf-8'))
 
 
 def main(args):
     pr_name = args.name.strip(' \'"')
     branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
-    git_checkout(branch_name)
-    git_add()
-    git_commit(pr_name)
-    git_push(branch_name)
-    pr_link = git_pull_request(pr_name)
-    copy_to_clipboard(pr_link)
+    pr_link = git_flow(pr_name, branch_name)
+    slack_msg = '{} {}'.format(pr_link, args.slack_msg)
+    if args.send_slack and is_slack_available():
+        send_to_slack(args.slack_token, args.slack_channel, slack_msg)
+    os = get_os()
+    if args.chrome:
+        open_in_chrome(os, pr_link)
+    copy_to_clipboard(os, pr_link)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='create a simple GitHub PR')
     parser.add_argument('name', help='simple PR name')
+    parser.add_argument('-c', '--chrome', default=False, action='store_true',
+            help='open the PR in the browser.')
+    parser.add_argument('-s', '--send_slack', default=True, action='store_false',
+            help='do not send notification to slack.')
+    parser.add_argument('--slack_token', default=get_slack_token(),
+            help='slack token')
+    parser.add_argument('--slack_channel', default='team-infra-pr',
+            help='slack channel')
+    parser.add_argument('-m', '--slack_msg', default='test',#'pick infra',
+            help='message to post with the PR link')
     args = parser.parse_args()
     main(args)
