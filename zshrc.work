@@ -51,6 +51,7 @@ bindkey -M vicmd 'j' history-substring-search-down
 alias sz="source $HOME/.zshrc"
 alias zc="$EDITOR $HOME/.zshrc"
 alias gPR="simple_pr"
+alias mpc="muster_production_console"
 alias gcf="git commit --amend --no-edit"
 
 # tmux
