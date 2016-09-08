@@ -21,16 +21,42 @@ def sys_call(cmd, return_code=False):
     return out.strip('\n')
 
 
+def load_config(config_file):
+    try:
+        if os.stat(config_file).st_size == 0: return {}
+        with open(config_file) as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        sys.stdout.write('WARNING: file=>{} not found\n'.format(config_file))
+        return {}
+    return config
+
+
 def get_slack_token():
     if 'SLACK_TOKEN' in os.environ:
         return os.environ['SLACK_TOKEN']
-    try:
-        slack_file = '{}/.slack'.format(os.environ['HOME'])
-        with open(slack_file) as f:
-            config = json.load(f)
-        return config['SLACK_TOKEN'] if 'SLACK_TOKEN' in config else None
-    except FileNotFoundError:
-        return None
+    return None
+
+
+def get_slack_channel():
+    if 'SLACK_CHANNEL' in os.environ:
+        return os.environ['SLACK_CHANNEL']
+    return None
+
+
+def get_slack_msg(pr_link, slack_msg):
+    if slack_msg is None:
+        if 'SLACK_MSG' not in os.environ:
+            return pr_link
+        slack_msg = os.environ['SLACK_MSG']
+    return '{} {}'.format(pr_link, slack_msg)
+
+
+def update_from_config(args, config):
+    for arg in vars(args):
+        if getattr(args, arg) is None and arg in config:
+            setattr(args, arg, config[arg])
+    return args
 
 
 def is_slack_available():
@@ -88,12 +114,16 @@ def git_flow(pr_name, branch_name):
 
 
 def send_to_slack(token, channel, msg):
+    if token is None:
+        token = get_slack_token()
+    if channel is None:
+        channel = get_slack_channel()
     slack_cmd = ['slack', '--slack-api-token', token, 'chat', 'postMessage',
             '--channel', channel, '--as_user', '"true"', '--text', msg]
     sys_call(slack_cmd)
 
 
-def open_in_chrome(os, url):
+def open_in_browser(os, url):
     if os == 'darwin':
         sys_call(['open', url])
     elif os == 'linux':
@@ -110,30 +140,32 @@ def copy_to_clipboard(os, msg):
 
 
 def main(args):
+    config = load_config(args.config_file)
+    args = update_from_config(args, config)
     pr_name = args.name.strip(' \'"')
     branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
     pr_link = git_flow(pr_name, branch_name)
-    slack_msg = '{} {}'.format(pr_link, args.slack_msg)
+    slack_msg = get_slack_msg(pr_link, args.slack_msg)
     if args.send_slack and is_slack_available():
         send_to_slack(args.slack_token, args.slack_channel, slack_msg)
     os = get_os()
-    if args.chrome:
-        open_in_chrome(os, pr_link)
+    if args.browser:
+        open_in_browser(os, pr_link)
     copy_to_clipboard(os, pr_link)
 
 
 if __name__ == "__main__":
+    home_dir = os.environ['HOME']
     parser = argparse.ArgumentParser(description='create a simple GitHub PR')
     parser.add_argument('name', help='simple PR name')
-    parser.add_argument('-c', '--chrome', default=False, action='store_true',
+    parser.add_argument('-f', '--config_file', default='{}/.simple_pr'.format(home_dir),
+            help='pass custom config file. by default it looks for ~/.simple_pr')
+    parser.add_argument('-b', '--browser', default=False, action='store_true',
             help='open the PR in the browser.')
-    parser.add_argument('-s', '--send_slack', default=True, action='store_false',
+    parser.add_argument('-s', '--send_slack', default=False, action='store_true',
             help='do not send notification to slack.')
-    parser.add_argument('--slack_token', default=get_slack_token(),
-            help='slack token')
-    parser.add_argument('--slack_channel', default='team-infra-pr',
-            help='slack channel')
-    parser.add_argument('-m', '--slack_msg', default='test',#'pick infra',
-            help='message to post with the PR link')
+    parser.add_argument('-m', '--slack_msg', help='slack message')
+    parser.add_argument('--slack_token', help='slack token')
+    parser.add_argument('--slack_channel', help='slack channel')
     args = parser.parse_args()
     main(args)

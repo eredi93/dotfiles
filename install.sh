@@ -41,8 +41,8 @@ rm -rf $HOME/.zshrc
 ln -s $HOME/.dotfiles/zshrc.$USE_CASE $HOME/.zshrc
 
 # git soft link
-if ! [ -L $HOME/.git-config ] && [ -f $HOME/.git-config ]; then
-    mv $HOME/.git-config $HOME/.git-config.old
+if ! [ -L $HOME/.gitconfig ] && [ -f $HOME/.gitconfig ]; then
+    mv $HOME/.gitconfig $HOME/.gitconfig.old
 fi
 rm -rf $HOME/.git-config
 ln -s $HOME/.dotfiles/git-config $HOME/.git-config
