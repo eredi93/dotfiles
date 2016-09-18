@@ -4,8 +4,13 @@ export EDITOR="vim"
 
 ZSH_THEME="pygmalion"
 
-plugins=(git aws bundler docker gem pip python ruby vi-mode zsh-syntax-highlighting)
-
+plugins=(
+  git
+  docker
+  vi-mode
+  zsh-syntax-highlighting
+  zsh-autosuggestions
+)
 source $ZSH/oh-my-zsh.sh
 
 # VI mode
@@ -50,7 +55,11 @@ export TERM=xterm-256color
 
 # Virtualenv Python
 export WORKING_HOME=$HOME/.virtualenvs
-source /usr/bin/virtualenvwrapper.sh
+source /usr/local/bin/virtualenvwrapper.sh
+
+# GO stuff
+export GOPATH=$HOME/go_workspace
+export PATH=$PATH:$GOPATH/bin
 
 # Dirty Hack to load zsh-history-substring-search
 source $HOME/.oh-my-zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
