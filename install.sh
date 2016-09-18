@@ -2,8 +2,9 @@
 
 # link custom scripts
 for SCRIPT in $(ls $HOME/.dotfiles/scripts); do
-  rm -rf /usr/local/bin/$SCRIPT
-  ln -s $HOME/.dotfiles/scripts/$SCRIPT /usr/local/bin/$SCRIPT
+  echo "Update scripts in /usr/local/bin root permisson needed"
+  sudo rm -rf /usr/local/bin/$SCRIPT
+  sudo ln -s $HOME/.dotfiles/scripts/$SCRIPT /usr/local/bin/$SCRIPT
 done
 
 # zsh-syntax-highlighting
