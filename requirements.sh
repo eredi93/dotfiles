@@ -53,8 +53,8 @@ fi
 HUB_VERSION="2.2.5"
 wget https://github.com/github/hub/releases/download/v$HUB_VERSION/$HUB-$HUB_VERSION.tgz -P /tmp
 tar xvf /tmp/$HUB-$HUB_VERSION.tgz -C /tmp
-/tmp/$HUB-$HUB_VERSION.tgz/install
-rm -rf /tmp/$HUB*
+sudo /tmp/$HUB-$HUB_VERSION/install
+rm -rf /tmp/$HUB
 
 pip install --user powerline-status
 pip install --user git+git://github.com/powerline/powerline
