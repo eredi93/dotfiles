@@ -7,8 +7,6 @@ ZSH_THEME="pygmalion"
 
 plugins=(
   git
-  aws
-  docker
   vi-mode
   zsh-syntax-highlighting
   zsh-autosuggestions
@@ -51,8 +49,10 @@ bindkey -M vicmd 'j' history-substring-search-down
 alias sz="source $HOME/.zshrc"
 alias zc="$EDITOR $HOME/.zshrc"
 alias gPR="simple_pr"
+alias gNO="git commit --allow-empty -m 'no-op change' README.md && git push"
 alias mpc="muster_production_console"
 alias gcf="git commit --amend --no-edit"
+alias gcol="git branch --sort=-committerdate | cut -c3- | percol | xargs git checkout"
 
 # tmux
 PS1="$PS1"'$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -d %) "$PWD")'
@@ -60,29 +60,27 @@ PS1="$PS1"'$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -
 export TERM=xterm-256color
 
 # Virtualenv Python
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 export WORKING_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 
+# Rbenv
+export PATH=$HOME/.rbenv/shims:$PATH
+
 # pilot stuff
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 export PATH=$HOME/.pilot/shims:$HOME/.pilot/bin:$PATH
-docker-machine status pilot | grep "Running" &> /dev/null
-if [ $? -eq 0 ]; then
-  eval $(pilot env)
-  clear
-else
-  docker-machine start pilot
-  eval $(pilot env)
-  clear
-fi
+eval $(pilot env)
 
 # Dirty Hack to load zsh-history-substring-search
 source $HOME/.oh-my-zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
-# Go path
-export GOPATH=$HOME/src/go
+# Go stuff
+export GOPATH=$HOME/go_workspace
 export PATH=$PATH:$GOPATH/bin
+
+# AWS
+export AWS_PROFILE=prod
+export AWS_REGION=us-east-1
 
 # Pilot alias
 alias P='pilot'
@@ -93,3 +91,6 @@ alias Pp='pilot proxy'
 alias Pe='pilot exec'
 alias Psh='pilot shell'
 alias Pps='pilot ps'
+
+# other alias
+alias t="/usr/bin/time"

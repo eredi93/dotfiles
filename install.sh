@@ -44,8 +44,8 @@ ln -s $HOME/.dotfiles/zshrc.$USE_CASE $HOME/.zshrc
 if ! [ -L $HOME/.gitconfig ] && [ -f $HOME/.gitconfig ]; then
     mv $HOME/.gitconfig $HOME/.gitconfig.old
 fi
-rm -rf $HOME/.git-config
-ln -s $HOME/.dotfiles/git-config $HOME/.git-config
+rm -rf $HOME/.gitconfig
+ln -s $HOME/.dotfiles/gitconfig $HOME/.gitconfig
 
 # vimrc soft link
 if ! [ -L $HOME/.vimrc ] && [ -f $HOME/.vimrc ]; then
@@ -66,6 +66,13 @@ git clone https://github.com/VundleVim/Vundle.vim.git $VIM_DIR/bundle/Vundle.vim
 git clone https://github.com/altercation/vim-colors-solarized.git $VIM_DIR/bundle/vim-colors-solarized
 cp $VIM_DIR/bundle/vim-colors-solarized/colors/solarized.vim $VIM_DIR/colors/
 vim +PluginInstall +qall
+
+# setup tmux plugin manager
+TPM_DIR=$HOME/.tmux/plugins/tpm
+if [ -d $TPM_DIR ]; then
+    rm -rf $TPM_DIR
+fi
+git clone https://github.com/tmux-plugins/tpm $TPM_DIR
 
 # tmux soft link
 if ! [ -L $HOME/.tmux.conf ] && [ -f $HOME/.tmux.conf ]; then

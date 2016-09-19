@@ -4,6 +4,7 @@ import subprocess
 import json
 import sys
 import os
+import re
 
 
 def sys_call(cmd, return_code=False):
@@ -32,10 +33,10 @@ def load_config(config_file):
     return config
 
 
-def get_slack_token():
+def get_slack_token(token):
     if 'SLACK_TOKEN' in os.environ:
         return os.environ['SLACK_TOKEN']
-    return None
+    return token
 
 
 def get_slack_channel():
@@ -62,11 +63,6 @@ def update_from_config(args, config):
 def is_slack_available():
     if sys_call(['which', 'slack'], return_code=True) != 0:
         sys.stderr.write('ERROR: slack not found.')
-        return False
-    if get_slack_token() is None:
-        sys.stderr.write('ERROR: Unable to find slack token.\n')
-        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment' \
-                'variables or in a ~/.slack json formatted file.')
         return False
     return True
 
@@ -101,21 +97,43 @@ def git_push(branch_name):
 
 
 def git_pull_request(pr_name):
-    response = sys_call(['hub', 'pull-request', '-m', '"{}"'.format(pr_name)])
+    response = sys_call(['hub', 'pull-request', '-m', '{}'.format(pr_name)])
+    return response
+
+def git_origin_url():
+    response = sys_call(['git', 'config', '--get', 'remote.origin.url'])
+    if response.split('.')[-1] == 'git':
+        uri = re.findall('@(.*?).git', response)[0].replace(':', '/')
+        response = 'https://{}'.format(uri)
     return response
 
 
-def git_flow(pr_name, branch_name):
+def ask_for_git_diff():
+    while True:
+        res = input("Do you want to see the diff of your PR? [Y/n]  ")
+        if res.strip() == '' or res.strip().lower() == 'y':
+            os.system('git difftool --tool vimdiff --cached')
+            break
+        elif res.strip().lower() == 'n':
+            break
+
+
+def git_flow(pr_name, branch_name, no_diff=False, no_pr=False):
     git_checkout(branch_name)
     git_add()
+    if not no_diff: ask_for_git_diff()
     git_commit(pr_name)
     git_push(branch_name)
+    if no_pr:
+        return git_origin_url()
     return git_pull_request(pr_name)
 
 
 def send_to_slack(token, channel, msg):
-    if token is None:
-        token = get_slack_token()
+    if get_slack_token(token) is None:
+        sys.stderr.write('ERROR: Unable to find slack token.\n')
+        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment' \
+                'variables or in a ~/.slack.json.')
     if channel is None:
         channel = get_slack_channel()
     slack_cmd = ['slack', '--slack-api-token', token, 'chat', 'postMessage',
@@ -144,7 +162,7 @@ def main(args):
     args = update_from_config(args, config)
     pr_name = args.name.strip(' \'"')
     branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
-    pr_link = git_flow(pr_name, branch_name)
+    pr_link = git_flow(pr_name, branch_name, args.no_diff, args.no_pr)
     slack_msg = get_slack_msg(pr_link, args.slack_msg)
     if args.send_slack and is_slack_available():
         send_to_slack(args.slack_token, args.slack_channel, slack_msg)
@@ -158,14 +176,17 @@ if __name__ == "__main__":
     home_dir = os.environ['HOME']
     parser = argparse.ArgumentParser(description='create a simple GitHub PR')
     parser.add_argument('name', help='simple PR name')
-    parser.add_argument('-f', '--config_file', default='{}/.simple_pr'.format(home_dir),
-            help='pass custom config file. by default it looks for ~/.simple_pr')
+    parser.add_argument('-f', '--config_file', default='{}/.simple_pr.json'.format(home_dir),
+            help='pass custom config file. by default it looks for ~/.simple_pr.json')
     parser.add_argument('-b', '--browser', default=False, action='store_true',
             help='open the PR in the browser.')
     parser.add_argument('-s', '--send_slack', default=False, action='store_true',
-            help='do not send notification to slack.')
+            help='send notification to slack.')
     parser.add_argument('-m', '--slack_msg', help='slack message')
     parser.add_argument('--slack_token', help='slack token')
     parser.add_argument('--slack_channel', help='slack channel')
+    parser.add_argument('--no_diff',action='store_true', help='do not ask for diff')
+    parser.add_argument('--no_pr', action='store_true',
+            help='do not create the PR just push the branch')
     args = parser.parse_args()
     main(args)

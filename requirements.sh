@@ -50,6 +50,12 @@ else
   install_package "python-pip"
   HUB="hub-linux-amd64"
 fi
+if [ $OS = "debian" ]; then
+  install_package "silversearcher-ag"
+else
+  install_package "the_silver_searcher"
+fi
+
 HUB_VERSION="2.2.5"
 wget https://github.com/github/hub/releases/download/v$HUB_VERSION/$HUB-$HUB_VERSION.tgz -P /tmp
 tar xvf /tmp/$HUB-$HUB_VERSION.tgz -C /tmp

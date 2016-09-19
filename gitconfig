@@ -5,3 +5,9 @@ name = Jacopo Scrinzi
 email = scrinzi.jacopo@gmail.com
 [push]
        	default = current
+[pull]
+       	default = current
+[github]
+	user = eredi93
+[ghi]
+	token = !security find-internet-password -a eredi93 -s github.com -l 'ghi token' -w
