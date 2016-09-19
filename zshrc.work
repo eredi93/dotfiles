@@ -7,7 +7,6 @@ ZSH_THEME="pygmalion"
 
 plugins=(
   git
-  aws
   docker
   vi-mode
   zsh-syntax-highlighting
@@ -63,9 +62,10 @@ export TERM=xterm-256color
 export WORKING_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 
-# pilot stuff
+# nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+# pilot stuff
 export PATH=$HOME/.pilot/shims:$HOME/.pilot/bin:$PATH
 docker-machine status pilot | grep "Running" &> /dev/null
 if [ $? -eq 0 ]; then

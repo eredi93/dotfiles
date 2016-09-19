@@ -32,10 +32,10 @@ def load_config(config_file):
     return config
 
 
-def get_slack_token():
+def get_slack_token(token):
     if 'SLACK_TOKEN' in os.environ:
         return os.environ['SLACK_TOKEN']
-    return None
+    return token
 
 
 def get_slack_channel():
@@ -62,11 +62,6 @@ def update_from_config(args, config):
 def is_slack_available():
     if sys_call(['which', 'slack'], return_code=True) != 0:
         sys.stderr.write('ERROR: slack not found.')
-        return False
-    if get_slack_token() is None:
-        sys.stderr.write('ERROR: Unable to find slack token.\n')
-        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment' \
-                'variables or in a ~/.slack json formatted file.')
         return False
     return True
 
@@ -114,8 +109,10 @@ def git_flow(pr_name, branch_name):
 
 
 def send_to_slack(token, channel, msg):
-    if token is None:
-        token = get_slack_token()
+    if get_slack_token(token) is None:
+        sys.stderr.write('ERROR: Unable to find slack token.\n')
+        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment' \
+                'variables or in a ~/.slack.json.')
     if channel is None:
         channel = get_slack_channel()
     slack_cmd = ['slack', '--slack-api-token', token, 'chat', 'postMessage',
@@ -158,12 +155,12 @@ if __name__ == "__main__":
     home_dir = os.environ['HOME']
     parser = argparse.ArgumentParser(description='create a simple GitHub PR')
     parser.add_argument('name', help='simple PR name')
-    parser.add_argument('-f', '--config_file', default='{}/.simple_pr'.format(home_dir),
-            help='pass custom config file. by default it looks for ~/.simple_pr')
+    parser.add_argument('-f', '--config_file', default='{}/.simple_pr.json'.format(home_dir),
+            help='pass custom config file. by default it looks for ~/.simple_pr.json')
     parser.add_argument('-b', '--browser', default=False, action='store_true',
             help='open the PR in the browser.')
     parser.add_argument('-s', '--send_slack', default=False, action='store_true',
-            help='do not send notification to slack.')
+            help='send notification to slack.')
     parser.add_argument('-m', '--slack_msg', help='slack message')
     parser.add_argument('--slack_token', help='slack token')
     parser.add_argument('--slack_channel', help='slack channel')

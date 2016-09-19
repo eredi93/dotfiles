@@ -17,6 +17,7 @@ Plugin 'shougo/neocomplete.vim'
 Plugin 'kien/ctrlp.vim'
 Plugin 'tpope/vim-surround'
 Plugin 'vim-ruby/vim-ruby'
+Plugin 'hashivim/vim-terraform'
 Plugin 'ervandew/supertab'
 Plugin 'tpope/vim-markdown'
 Plugin 'xolox/vim-misc'
@@ -84,6 +85,7 @@ set softtabstop=2
 set expandtab
 " lang
 autocmd Filetype python setlocal ts=4 sw=4 sts=0 expandtab
+autocmd Filetype terraform setlocal ts=4 sw=4 sts=0 expandtab
 
 " theme
 syntax on
