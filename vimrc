@@ -24,6 +24,7 @@ Plugin 'fatih/vim-go'
 Plugin 'hashivim/vim-terraform'
 Plugin 'ervandew/supertab'
 Plugin 'tpope/vim-markdown'
+Plugin 'crusoexia/vim-monokai'
 Plugin 'xolox/vim-misc'
 Plugin 'xolox/vim-notes'
 
@@ -38,6 +39,13 @@ set number
 set hidden
 set clipboard=unnamed
 set rnu
+
+" theme
+syntax on
+colorscheme monokai
+"let g:solarized_termcolors=256
+"colorscheme solarized
+"set background=dark
 
 " Map leader
 let mapleader=','
@@ -78,10 +86,10 @@ inoremap <left> <nop>
 inoremap <right> <nop>
 
 " 80 char line
-" highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-" match OverLength /\%81v.\+/
-highlight ColorColumn ctermbg=magenta
-call matchadd('ColorColumn', '\%81v', 100)
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+match OverLength /\%81v.\+/
+"highlight ColorColumn ctermbg=magenta
+"call matchadd('ColorColumn', '\%81v', 100)
 
 " indention
 filetype plugin indent on
@@ -95,19 +103,12 @@ autocmd Filetype python setlocal ts=4 sw=4 sts=0 expandtab
 " fmt
 let g:terraform_fmt_on_save = 1
 
-" theme
-syntax on
-"let g:solarized_termcolors=256
-colorscheme solarized
-
 try
    let g:airline_powerline_fonts = 1
    set laststatus=2
    let g:airline_theme='powerlineish'
 catch                                                                         
 endtry
-
-set background=dark
 
 " neocomplete
 let g:neocomplete#enable_at_startup = 1

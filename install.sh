@@ -2,8 +2,8 @@
 
 # link custom scripts
 for SCRIPT in $(ls $HOME/.dotfiles/scripts); do
-  rm -rf /usr/local/bin/$SCRIPT
-  ln -s $HOME/.dotfiles/scripts/$SCRIPT /usr/local/bin/$SCRIPT
+  sudo rm -rf /usr/local/bin/$SCRIPT
+  sudo ln -s $HOME/.dotfiles/scripts/$SCRIPT /usr/local/bin/$SCRIPT
 done
 
 # zsh-syntax-highlighting
@@ -47,6 +47,14 @@ fi
 rm -rf $HOME/.gitconfig
 ln -s $HOME/.dotfiles/gitconfig $HOME/.gitconfig
 
+# terminator soft link
+if ! [ -L $HOME/.config/terminator/config ] && [ -f $HOME/.config/terminator/config ]; then
+    mv $HOME/.config/terminator/config $HOME/.config/terminator/config.old
+fi
+rm -rf $HOME/.config/terminator/config
+mkdir -p $HOME/.config/terminator
+ln -s $HOME/.dotfiles/terminator.conf $HOME/.config/terminator/config
+
 # vimrc soft link
 if ! [ -L $HOME/.vimrc ] && [ -f $HOME/.vimrc ]; then
     mv $HOME/.vimrc $HOME/.vimrc.old
@@ -63,8 +71,6 @@ mkdir $VIM_DIR
 mkdir $VIM_DIR/bundle
 mkdir $VIM_DIR/colors
 git clone https://github.com/VundleVim/Vundle.vim.git $VIM_DIR/bundle/Vundle.vim
-git clone https://github.com/altercation/vim-colors-solarized.git $VIM_DIR/bundle/vim-colors-solarized
-cp $VIM_DIR/bundle/vim-colors-solarized/colors/solarized.vim $VIM_DIR/colors/
 vim +PluginInstall +qall
 
 # setup tmux plugin manager

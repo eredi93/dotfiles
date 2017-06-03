@@ -25,7 +25,7 @@ install_package() {
     brew install $1
     ;;
   "debian")
-    apt-get install $1
+    sudo apt-get install $1
     ;;
   "arch")
     sudo pacman -S $1
@@ -46,6 +46,7 @@ if [ $OS = "mac" ]; then
   brew install python
   HUB="hub-darwin-amd64"
 else
+  install_package "terminator"
   install_package "vim-gnome"
   install_package "python-pip"
   HUB="hub-linux-amd64"
@@ -55,6 +56,8 @@ if [ $OS = "debian" ]; then
 else
   install_package "the_silver_searcher"
 fi
+
+sudo pip install virtualenv virtualenvwrapper
 
 HUB_VERSION="2.2.5"
 wget https://github.com/github/hub/releases/download/v$HUB_VERSION/$HUB-$HUB_VERSION.tgz -P /tmp

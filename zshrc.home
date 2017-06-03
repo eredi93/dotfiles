@@ -50,7 +50,7 @@ export TERM=xterm-256color
 
 # Virtualenv Python
 export WORKING_HOME=$HOME/.virtualenvs
-source /usr/bin/virtualenvwrapper.sh
+source /usr/local/bin/virtualenvwrapper.sh
 
 # Dirty Hack to load zsh-history-substring-search
 source $HOME/.oh-my-zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
