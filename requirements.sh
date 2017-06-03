@@ -25,13 +25,13 @@ install_package() {
     brew install $1
     ;;
   "debian")
-    sudo apt-get install $1
+    sudo apt-get install -y $1
     ;;
   "arch")
     sudo pacman -S $1
     ;;
   "redhat")
-    sudo yum install $1
+    sudo yum install -y $1
     ;;
   esac
 }

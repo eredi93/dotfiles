@@ -37,15 +37,19 @@ set t_Co=256
 set encoding=utf-8
 set number
 set hidden
-set clipboard=unnamed
 set rnu
+
+" clipboard
+if  system('uname') == 'Linux'
+  set clipboard=unnamedplus
+else
+  set clipboard=unnamed
+endif
 
 " theme
 syntax on
 colorscheme monokai
-"let g:solarized_termcolors=256
-"colorscheme solarized
-"set background=dark
+set background=dark
 
 " Map leader
 let mapleader=','
