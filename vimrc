@@ -40,7 +40,7 @@ set hidden
 set rnu
 
 " clipboard
-if  system('uname') == 'Linux'
+if system('uname') == 'Linux'
   set clipboard=unnamedplus
 else
   set clipboard=unnamed

@@ -62,7 +62,7 @@ sudo pip install virtualenv virtualenvwrapper
 HUB_VERSION="2.2.5"
 wget https://github.com/github/hub/releases/download/v$HUB_VERSION/$HUB-$HUB_VERSION.tgz -P /tmp
 tar xvf /tmp/$HUB-$HUB_VERSION.tgz -C /tmp
-/tmp/$HUB-$HUB_VERSION.tgz/install
+sudo /tmp/$HUB-$HUB_VERSION/install
 rm -rf /tmp/$HUB*
 
 pip install --user powerline-status
