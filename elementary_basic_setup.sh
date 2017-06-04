@@ -26,3 +26,12 @@ sudo apt-get install -y numix-icon-theme-circle numix-gtk-theme
 
 # change default terminal
 sudo update-alternatives --config x-terminal-emulator
+
+# install docker
+sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual
+sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+sudo apt-get update
+sudo apt-get install docker-ce
