@@ -111,19 +111,19 @@ setup() {
 
   cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
-  if [ $(python -c 'import sys; print(sys.version_info[:][0])') == "3" ]; then
+  if [[ $(python -c 'import sys; print(sys.version_info[:][0])' 2> /dev/null) == "3" ]]; then
     python_name="python"
-    pip_name="python"
+    pip_name="pip"
   else
     python_name="python3"
-    pip_name="python3"
+    pip_name="pip3"
   fi
 
   if ! command -v $python_name &> /dev/null ; then
     echo "Python 3.x is not istalled 😢" >&2
     exit 1
   elif ! command -v $pip_name &> /dev/null ; then
-    echo "Python-pip is not istalled 😢" >&2
+    echo "Python-pip 3.x is not istalled 😢" >&2
     exit 1
   fi
 
