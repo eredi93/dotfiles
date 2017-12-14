@@ -112,10 +112,13 @@ setup() {
   # TODO check that is using python3
   if ! command -v python &> /dev/null ; then
     echo "Python is not istalled 😢" >&2
+    exit 1
   elif ! command -v pip &> /dev/null ; then
     echo "Python-pip is not istalled 😢" >&2
+    exit 1
   elif [ $(python -c 'import sys; print(sys.version_info[:][0])') != "3" ]; then
     echo "python must me version 3.x 😢" >&2
+    exit 1
   fi
 
   pip install -r requirements.txt
