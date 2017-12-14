@@ -109,7 +109,9 @@ setup() {
 
   cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
-  # TODO check that is using python3
+  alias python=python3
+  alias pip=pip3
+
   if ! command -v python &> /dev/null ; then
     echo "Python is not istalled 😢" >&2
     exit 1
