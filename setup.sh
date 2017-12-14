@@ -64,6 +64,8 @@ verify_os() {
     # it's above the required version.
 
     elif [ "$os_name" == "Linux" ] && [ -e "/etc/lsb-release" ]; then
+        # make sure lsb-release is istalled
+        sudo apt-get install -y lsb-release > /dev/null
 
         os_version="$(lsb_release -d | cut -f2 | cut -d' ' -f2)"
 
