@@ -6,7 +6,7 @@ from halo import Halo
 import packages
 
 from errors import SetupError
-from constants import MINIMUM_MACOS_VERSION, MINIMUM_MACOS_VERSION, \
+from constants import MINIMUM_MACOS_VERSION, MINIMUM_UBUNTU_VERSION, \
     FILES_TO_SYMLINK
 from helpers import get_os, is_supported_version, print_in_magenta, \
     download_and_untar
