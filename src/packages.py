@@ -23,7 +23,7 @@ def install_with_apt(pack):
 
 
 def install_hub(os):
-    arch = os.popen("uname -s").read().strip().lower()
+    arch = os.popen("uname -s").read().strip().lower().strip
     url = "https://github.com/github/hub/releases/download/" \
           "v{0}/hub-{1}-amd64-{0}.tgz".format(HUB_VERSION, arch)
     home_bin = os.path.expanduser("~/.bin")

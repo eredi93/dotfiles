@@ -12,14 +12,14 @@ from helpers import get_os, is_supported_version, print_in_magenta, \
 
 def verify_os(os):
     if os == "macos":
-        os_version = os.system("sw_vers -productVersion")
+        os_version = os.popen("sw_vers -productVersion").read().strip()
 
         if not is_supported_version(os_version, MINIMUM_MACOS_VERSION):
             msg = "Sorry, this script is intended only for macOS {}".format(
                     MINIMUM_MACOS_VERSION)
             raise SetupError(msg)
     elif os == "ubuntu":
-        os_version= os.system("lsb_release -d | cut -f2 | cut -d' ' -f2")
+        os_version = os.popen("lsb_release -d").read().strip().split(' ')[1]
 
         if not is_supported_version(os_version, MINIMUM_UBUNTU_VERSION):
             msg = "Sorry, this script is intended only for Ubuntu {}".format(

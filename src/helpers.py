@@ -9,7 +9,7 @@ from termcolor import colored, cprint
 from urllib.request import urlretrieve
 
 def get_os():
-    kernel_name = os.popen("uname -s").read()
+    kernel_name = os.popen("uname -s").read().strip()
 
     if kernel_name == "Darwin":
         return "macos"
