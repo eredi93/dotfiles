@@ -111,10 +111,11 @@ setup() {
 
   cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1
 
-  if [[ $(python -c 'import sys; print(sys.version_info[:][0])' 2> /dev/null) == "3" ]]; then
-    python_name="python"
-    pip_name="pip"
-  else
+  python_version=$(python -c 'import sys; print(sys.version_info[:][0])' 2> /dev/null)
+  python_name="python"
+  pip_name="python"
+
+  if [[ $python_version != "3" ]]; then
     python_name="python3"
     pip_name="pip3"
   fi
