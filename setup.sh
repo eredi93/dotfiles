@@ -60,13 +60,6 @@ setup() {
 
 main() {
 
-    # Ensure the OS is supported and
-    # it's above the required version.
-
-    verify_os || exit 1
-
-    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
     ask_for_sudo
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
