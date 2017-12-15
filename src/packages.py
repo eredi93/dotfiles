@@ -17,7 +17,7 @@ def install_with_brew(pack):
 
 def install_with_apt(pack):
     spinner = Halo(text=pack, spinner="dots")
-    status = os.system("sudo apt-get install -y {} > /dev/null".format(cmd))
+    status = os.system("sudo apt-get install -y {} > /dev/null".format(pack))
     if status == 0:
         spinner.succeed(pack)
     else:
