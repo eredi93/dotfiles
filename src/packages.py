@@ -1,4 +1,6 @@
 import os
+from halo import Halo
+
 from constants import HUB_VERSION, PACKAGES
 from helpers import download_and_untar
 from errors import SetupError
