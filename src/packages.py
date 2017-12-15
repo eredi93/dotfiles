@@ -22,7 +22,7 @@ def install_with_apt(pack):
         spinner.fail(pack)
 
 
-def install_hub(os):
+def install_hub(sys_os):
     arch = os.popen("uname -s").read().strip().lower().strip
     url = "https://github.com/github/hub/releases/download/" \
           "v{0}/hub-{1}-amd64-{0}.tgz".format(HUB_VERSION, arch)
@@ -34,19 +34,19 @@ def install_hub(os):
     download_and_untar(url, "{}/hub")
 
 
-def install(os):
-    if os == "macos":
+def install(sys_os):
+    if sys_os == "macos":
         func = install_with_brew
         packs = [ x[1] for x in PACKAGES ]
-    elif os == "ubuntu":
+    elif sys_os == "ubuntu":
         func = install_with_apt
         packs = [ x[1] for x in PACKAGES ]
     else:
-        raise SetupError("Unsupported os: {}".format(os))
+        raise SetupError("Unsupported OS: {}".format(sys_os))
 
     for pack in packs: func.__call__(pack)
 
-    install_hub(os)
+    install_hub(sys_os)
 
 
 def setup_shell():

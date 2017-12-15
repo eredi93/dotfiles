@@ -10,15 +10,15 @@ from helpers import get_os, is_supported_version, print_in_magenta, \
     download_and_untar
 
 
-def verify_os(os):
-    if os == "macos":
+def verify_os(sys_os):
+    if sys_os == "macos":
         os_version = os.popen("sw_vers -productVersion").read().strip()
 
         if not is_supported_version(os_version, MINIMUM_MACOS_VERSION):
             msg = "Sorry, this script is intended only for macOS {}".format(
                     MINIMUM_MACOS_VERSION)
             raise SetupError(msg)
-    elif os == "ubuntu":
+    elif sys_os == "ubuntu":
         os_version = os.popen("lsb_release -d").read().strip().split(' ')[1]
 
         if not is_supported_version(os_version, MINIMUM_UBUNTU_VERSION):
@@ -54,15 +54,15 @@ def create_symbolic_links():
             spinner.succeed(file_name)
 
 
-def setup(os):
-    packages.setup(os)
+def setup(sys_os):
+    packages.setup(sys_os)
     packages.setup_shell()
 
 
 def main():
-    os = get_os()
+    sys_os = get_os()
 
-    verify_os(os)
+    verify_os(sys_os)
 
     print_in_magenta("\n • Download and extract archive\n\n")
     download_dotfiles()
@@ -71,7 +71,7 @@ def main():
     create_symbolic_links()
 
     print_in_magenta("\n • Setup\n\n")
-    setup(os)
+    setup(sys_os)
 
 
 if __name__ == "__main__":

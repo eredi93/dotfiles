@@ -128,7 +128,7 @@ setup() {
     exit 1
   fi
 
-  $pip_name install -r requirements.txt 2>&1 > /dev/null
+  $pip_name install -r requirements.txt 2>&1 &> /dev/null
 
   $python_name src/main.py
 }
