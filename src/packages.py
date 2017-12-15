@@ -42,7 +42,7 @@ def install(os):
         func = install_with_apt
         packs = [ x[1] for x in PACKAGES ]
     else:
-        raise(SetupError, "Unsupported os: {}".format(os))
+        raise SetupError("Unsupported os: {}".format(os))
 
     for pack in packs: func.__call__(pack)
 
