@@ -70,7 +70,9 @@ main() {
         dotfiles_dir="$HOME/.dotfiles"
     fi
 
-    git clone https://github.com/eredi93/dotfiles.git $dotfiles_dir > /dev/null
+    rm -rf $dotfiles_dir
+
+    git clone https://github.com/eredi93/dotfiles.git $dotfiles_dir &> /dev/null
 
     setup $dotfiles_dir
 }
