@@ -38,7 +38,7 @@ def create_symbolic_links():
         src = "{}/{}".format(src_dir, file_name)
         dst = "{}/.{}".format(os.getenv("HOME"), file_name)
         spinner = Halo(text="{} → {}".format(src, dst), spinner="dots")
-
+        spinner.start()
         try:
             if os.path.islink(dst):
                 os.remove(dst)
@@ -46,10 +46,9 @@ def create_symbolic_links():
                 os.rename(dst, "{}.local".format(dst))
 
             os.symlink(src, dst)
+            spinner.succeed(file_name)
         except:
             spinner.fail(file_name)
-        else:
-            spinner.succeed(file_name)
 
 
 def setup(sys_os):
