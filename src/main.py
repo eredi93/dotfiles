@@ -7,7 +7,7 @@ import packages
 
 from errors import SetupError
 from constants import MINIMUM_MACOS_VERSION, MINIMUM_MACOS_VERSION, \
-    DOTFILES_ORIGIN, DOTFILES_TARBALL_URL, DOTFILES_DIRECTORY, FILES_TO_SYMLINK
+    FILES_TO_SYMLINK
 from helpers import get_os, is_supported_version, print_in_magenta, \
     download_and_untar
 
@@ -30,11 +30,6 @@ def verify_os(sys_os):
     else:
         msg = "Sorry, this script is intended only for macOS and Ubuntu!"
         raise SetupError(msg)
-
-
-@Halo(text="Loading", spinner="dots")
-def download_dotfiles():
-    download_and_untar(DOTFILES_TARBALL_URL, DOTFILES_DIRECTORY)
 
 
 def create_symbolic_links():
@@ -65,9 +60,6 @@ def main():
     sys_os = get_os()
 
     verify_os(sys_os)
-
-    print_in_magenta("\n • Download and extract archive\n\n")
-    download_dotfiles()
 
     print_in_magenta("\n • Create symbolic links\n\n")
     create_symbolic_links()
