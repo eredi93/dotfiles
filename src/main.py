@@ -17,17 +17,17 @@ def verify_os(os):
         if not is_supported_version(os_version, MINIMUM_MACOS_VERSION):
             msg = "Sorry, this script is intended only for macOS {}".format(
                     MINIMUM_MACOS_VERSION)
-            raise(SetupError, msg)
+            raise SetupError(msg)
     elif os == "ubuntu":
         os_version= os.system("lsb_release -d | cut -f2 | cut -d' ' -f2")
 
         if not is_supported_version(os_version, MINIMUM_UBUNTU_VERSION):
             msg = "Sorry, this script is intended only for Ubuntu {}".format(
                     MINIMUM_UBUNTU_VERSION)
-            raise(SetupError, msg)
+            raise SetupError(msg)
     else:
         msg = "Sorry, this script is intended only for macOS and Ubuntu!"
-        raise(SetupError, msg)
+        raise SetupError(msg)
 
 
 @Halo(text="Loading", spinner="dots")
