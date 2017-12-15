@@ -1,2 +1,2 @@
-class SetupError(Exception):
+class SetupError(BaseException):
     pass
