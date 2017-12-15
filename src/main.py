@@ -33,8 +33,9 @@ def verify_os(sys_os):
 
 
 def create_symbolic_links():
+    src_dir = "{}/files".format(os.path.dirname(os.path.realpath(__file__)))
     for file_name in FILES_TO_SYMLINK:
-        src = "{}/src/fixtures/{}".format(DOTFILES_DIRECTORY, file_name)
+        src = "{}/{}".format(src_dir, file_name)
         dst = "{}/.{}".format(os.getenv("HOME"), file_name)
         spinner = Halo(text="{} → {}".format(src, dst), spinner="dots")
 
