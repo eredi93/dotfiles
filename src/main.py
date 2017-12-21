@@ -53,7 +53,8 @@ def create_symbolic_links():
 
 def setup(sys_os):
     packages.install(sys_os)
-    packages.setup_shell()
+    packages.setup_zsh()
+    packages.setup_omz()
 
 
 def main():
