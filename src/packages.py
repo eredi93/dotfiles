@@ -1,5 +1,6 @@
 import os
 import time
+import requests
 import subprocess
 from halo import Halo
 
@@ -37,17 +38,21 @@ def install_hub(sys_os):
     arch = os.popen("uname -s").read().strip().lower()
     url = "https://github.com/github/hub/releases/download/" \
           "v{0}/hub-{1}-amd64-{0}.tgz".format(HUB_VERSION, arch)
-    home_bin = os.path.expanduser("~/.bin")
-    hub_bin = "{}/hub".format(home_bin)
-
+    hub_dir = "/tmp/hub-{}".format(HUB_VERSION)
     try:
         if not os.path.isdir(home_bin):
             os.mkdir(home_bin)
-        if os.path.isfile(hub_bin):
-            os.remove(home_bin)
-        download_and_untar(url, hub_bin)
+        if os.path.isdir(hub_dir):
+            os.remove(hub_dir)
+        download_and_untar(url, hub_dir)
+        status = subprocess.Popen(["sudo", "{}/install".format(hub_dir)],
+                stdout=DEV_NULL, stderr=DEV_NULL).wait()
+        shutil.rmtree(hub_dir)
+        if status != 0:
+            return spinner.fail("hub")
         spinner.succeed("hub")
-    except:
+    except Exception as e:
+        print(str(e))
         spinner.fail("hub")
 
 
@@ -66,8 +71,9 @@ def install(sys_os):
 
 def setup_zsh():
     print_in_green("set ZSH as default shell")
+    zsh = os.popen("which zsh").read().strip()
     spinner = Halo()
-    if os.system("chsh -s /usr/bin/zsh") != 0:
+    if os.system("chsh -s {}".format(zsh)) != 0:
         return spinner.fail("ZSH")
     spinner.succeed("ZSH")
 
@@ -80,8 +86,9 @@ def setup_omz():
     if res.status_code != 200:
         return spinner.fail("Oh-My-ZSH")
 
-    status = subprocess.Popen(["sh", "-c", res.text],
-            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+    #status = subprocess.Popen(["sh", "-c", res.text],
+    #        stdout=DEV_NULL, stderr=DEV_NULL).wait()
+    status = subprocess.Popen(["sh", "-c", res.text]).wait()
     if status != 0:
         return spinner.fail("Oh-My-ZSH")
     spinner.succeed("Oh-My-ZSH")

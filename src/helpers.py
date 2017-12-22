@@ -1,5 +1,6 @@
 import os
 import sys
+import shutil
 import codecs
 import random
 import tarfile
@@ -54,4 +55,4 @@ def download_and_untar(url, dst):
         files = os.listdir(dirpath)
         files.remove(file_name)
 
-        os.rename("{}/{}".format(dirpath, files[0]), dst)
+        shutil.move("{}/{}".format(dirpath, files[0]), dst)
