@@ -1,5 +1,6 @@
 import os
 import time
+import shutil
 import requests
 import subprocess
 from halo import Halo
@@ -40,10 +41,6 @@ def install_hub(sys_os):
           "v{0}/hub-{1}-amd64-{0}.tgz".format(HUB_VERSION, arch)
     hub_dir = "/tmp/hub-{}".format(HUB_VERSION)
     try:
-        if not os.path.isdir(home_bin):
-            os.mkdir(home_bin)
-        if os.path.isdir(hub_dir):
-            os.remove(hub_dir)
         download_and_untar(url, hub_dir)
         status = subprocess.Popen(["sudo", "{}/install".format(hub_dir)],
                 stdout=DEV_NULL, stderr=DEV_NULL).wait()
@@ -86,9 +83,8 @@ def setup_omz():
     if res.status_code != 200:
         return spinner.fail("Oh-My-ZSH")
 
-    #status = subprocess.Popen(["sh", "-c", res.text],
-    #        stdout=DEV_NULL, stderr=DEV_NULL).wait()
-    status = subprocess.Popen(["sh", "-c", res.text]).wait()
+    status = subprocess.Popen(["sh", "-c", "{} && exit".format(res.text)],
+            stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail("Oh-My-ZSH")
     spinner.succeed("Oh-My-ZSH")
