@@ -1,0 +1,192 @@
+#! /usr/bin/env python3
+import argparse
+import subprocess
+import json
+import sys
+import os
+import re
+
+
+def sys_call(cmd, return_code=False):
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    if out is not None: out = out.decode('utf-8')
+    if err is not None: err = err.decode('utf-8')
+    returncode = p.returncode
+    if return_code is True: return returncode
+    if returncode != 0:
+        sys.stderr.write('ERROR: got {} when running {}\n'.format(returncode, cmd))
+        if out is not None: sys.stdout.write('{}'.format(out))
+        if err is not None: sys.stderr.write('{}'.format(err))
+        sys.exit(returncode)
+    return out.strip('\n')
+
+
+def load_config(config_file):
+    try:
+        if os.stat(config_file).st_size == 0: return {}
+        with open(config_file) as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        sys.stdout.write('WARNING: file=>{} not found\n'.format(config_file))
+        return {}
+    return config
+
+
+def get_slack_token(token):
+    if 'SLACK_TOKEN' in os.environ:
+        return os.environ['SLACK_TOKEN']
+    return token
+
+
+def get_slack_channel():
+    if 'SLACK_CHANNEL' in os.environ:
+        return os.environ['SLACK_CHANNEL']
+    return None
+
+
+def get_slack_msg(pr_link, slack_msg):
+    if slack_msg is None:
+        if 'SLACK_MSG' not in os.environ:
+            return pr_link
+        slack_msg = os.environ['SLACK_MSG']
+    return '{} {}'.format(pr_link, slack_msg)
+
+
+def update_from_config(args, config):
+    for arg in vars(args):
+        if getattr(args, arg) is None and arg in config:
+            setattr(args, arg, config[arg])
+    return args
+
+
+def is_slack_available():
+    if sys_call(['which', 'slack'], return_code=True) != 0:
+        sys.stderr.write('ERROR: slack not found.')
+        return False
+    return True
+
+
+def get_os():
+    return sys_call(['uname']).lower()
+
+
+def get_clipboard(os):
+    if os == 'darwin':
+        return 'pbcopy'
+    elif os == 'linux':
+        return 'pbcopy'
+    else:
+        sys.stderr.write('ERROR: os=>{} is not supported. Unable to get clipboard\n'.format(os))
+
+
+def git_checkout(branch_name):
+    sys_call(['git', 'checkout', '-b', branch_name])
+
+
+def git_add():
+    sys_call(['git', 'add', '.'])
+
+
+def git_commit(pr_name):
+    sys_call(['git', 'commit', '-m', pr_name])
+
+
+def git_push(branch_name):
+    sys_call(['git', 'push', 'origin', branch_name])
+
+
+def git_pull_request(pr_name):
+    response = sys_call(['hub', 'pull-request', '-m', '{}'.format(pr_name)])
+    return response
+
+def git_origin_url():
+    response = sys_call(['git', 'config', '--get', 'remote.origin.url'])
+    if response.split('.')[-1] == 'git':
+        uri = re.findall('@(.*?).git', response)[0].replace(':', '/')
+        response = 'https://{}'.format(uri)
+    return response
+
+
+def ask_for_git_diff():
+    while True:
+        res = input("Do you want to see the diff of your PR? [Y/n]  ")
+        if res.strip() == '' or res.strip().lower() == 'y':
+            os.system('git difftool --tool vimdiff --cached')
+            break
+        elif res.strip().lower() == 'n':
+            break
+
+
+def git_flow(pr_name, branch_name, no_diff=False, no_pr=False):
+    git_checkout(branch_name)
+    git_add()
+    if not no_diff: ask_for_git_diff()
+    git_commit(pr_name)
+    git_push(branch_name)
+    if no_pr:
+        return git_origin_url()
+    return git_pull_request(pr_name)
+
+
+def send_to_slack(token, channel, msg):
+    if get_slack_token(token) is None:
+        sys.stderr.write('ERROR: Unable to find slack token.\n')
+        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment' \
+                'variables or in a ~/.slack.json.')
+    if channel is None:
+        channel = get_slack_channel()
+    slack_cmd = ['slack', '--slack-api-token', token, 'chat', 'postMessage',
+            '--channel', channel, '--as_user', '"true"', '--text', msg]
+    sys_call(slack_cmd)
+
+
+def open_in_browser(os, url):
+    if os == 'darwin':
+        sys_call(['open', url])
+    elif os == 'linux':
+        sys_call(['xdg-open', url])
+    else:
+        sys.stderr.write('ERROR: os=>{} is not supported. Unable to get browser.'.format(os))
+
+
+def copy_to_clipboard(os, msg):
+    clipboard = get_clipboard(os)
+    process = subprocess.Popen(
+        clipboard, env={'LANG': 'en_US.UTF-8'}, stdin=subprocess.PIPE)
+    process.communicate(msg.encode('utf-8'))
+
+
+def main(args):
+    config = load_config(args.config_file)
+    args = update_from_config(args, config)
+    pr_name = args.name.strip(' \'"')
+    branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
+    pr_link = git_flow(pr_name, branch_name, args.no_diff, args.no_pr)
+    slack_msg = get_slack_msg(pr_link, args.slack_msg)
+    if args.send_slack and is_slack_available():
+        send_to_slack(args.slack_token, args.slack_channel, slack_msg)
+    os = get_os()
+    if args.browser:
+        open_in_browser(os, pr_link)
+    copy_to_clipboard(os, pr_link)
+
+
+if __name__ == "__main__":
+    home_dir = os.environ['HOME']
+    parser = argparse.ArgumentParser(description='create a simple GitHub PR')
+    parser.add_argument('name', help='simple PR name')
+    parser.add_argument('-f', '--config_file', default='{}/.simple_pr.json'.format(home_dir),
+            help='pass custom config file. by default it looks for ~/.simple_pr.json')
+    parser.add_argument('-b', '--browser', default=False, action='store_true',
+            help='open the PR in the browser.')
+    parser.add_argument('-s', '--send_slack', default=False, action='store_true',
+            help='send notification to slack.')
+    parser.add_argument('-m', '--slack_msg', help='slack message')
+    parser.add_argument('--slack_token', help='slack token')
+    parser.add_argument('--slack_channel', help='slack channel')
+    parser.add_argument('--no_diff',action='store_true', help='do not ask for diff')
+    parser.add_argument('--no_pr', action='store_true',
+            help='do not create the PR just push the branch')
+    args = parser.parse_args()
+    main(args)

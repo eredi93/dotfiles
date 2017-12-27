@@ -1,13 +1,13 @@
 import os
 import sys
+import glob
 
 from halo import Halo
 
 import packages
 
 from errors import SetupError
-from constants import MINIMUM_MACOS_VERSION, MINIMUM_UBUNTU_VERSION, \
-    FILES_TO_SYMLINK
+from constants import MINIMUM_MACOS_VERSION, MINIMUM_UBUNTU_VERSION
 from helpers import get_os, is_supported_version, print_in_magenta, \
     download_and_untar
 
@@ -34,9 +34,10 @@ def verify_os(sys_os):
 
 def create_symbolic_links():
     src_dir = "{}/files".format(os.path.dirname(os.path.realpath(__file__)))
-    for file_name in FILES_TO_SYMLINK:
-        src = "{}/{}".format(src_dir, file_name)
-        dst = "{}/.{}".format(os.getenv("HOME"), file_name)
+    dst_dir = os.getenv("HOME")
+    for src in glob.iglob("{}/*".format(src_dir)):
+        file_name = os.path.basename(src)
+        dst = "{}/.{}".format(dst_dir, file_name)
         spinner = Halo(text="{} → {}".format(src, dst), spinner="dots")
         spinner.start()
         try:
@@ -62,10 +63,10 @@ def main():
 
     verify_os(sys_os)
 
-    print_in_magenta("\n • Create symbolic links\n\n")
+    print_in_magenta("\n • Create symbolic links\n")
     create_symbolic_links()
 
-    print_in_magenta("\n • Setup\n\n")
+    print_in_magenta("\n • Setup\n")
     setup(sys_os)
 
 

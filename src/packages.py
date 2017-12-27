@@ -5,12 +5,36 @@ import requests
 import subprocess
 from halo import Halo
 
-from constants import HUB_VERSION, PACKAGES
+from constants import HUB_VERSION, PACKAGES, ZSH_PLUGINS, UBUNTU_REPOSITORIES
 from helpers import print_in_green, download_and_untar
 from errors import SetupError
 
 
 DEV_NULL = subprocess.PIPE
+
+
+def update_ubuntu_repository(repo):
+    text = "Adding repo: {}".format(repo)
+    spinner = Halo(text=text, spinner="dots")
+    spinner.start()
+    status = subprocess.Popen(["sudo", "add-apt-repository", "-y", repo],
+            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+    if status != 0:
+        return spinner.fail(text)
+    spinner.succeed(text)
+
+
+def update_ubuntu_repositories():
+    for repo in UBUNTU_REPOSITORIES:
+        update_ubuntu_repository(repo)
+    text = "Update ubuntu"
+    spinner = Halo(text=text, spinner="dots")
+    spinner.start()
+    status = subprocess.Popen(["sudo", "apt-get", "update"],
+            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+    if status != 0:
+        return spinner.fail(text)
+    spinner.succeed(text)
 
 
 def install_with_brew(pack):
@@ -58,6 +82,7 @@ def install(sys_os):
         for pack in [ x[0] for x in PACKAGES ]:
             install_with_brew(pack)
     elif sys_os == "ubuntu":
+        update_ubuntu_repositories()
         for pack in [ x[1] for x in PACKAGES ]:
             install_with_apt(pack)
     else:
@@ -75,6 +100,21 @@ def setup_zsh():
     spinner.succeed("ZSH")
 
 
+def zsh_plugins():
+    for plugin in ZSH_PLUGINS:
+        spinner = Halo(text=plugin, spinner="dots")
+        spinner.start()
+        repo = "https://github.com/zsh-users/{}.git".format(plugin)
+        dst = "{}/.oh-my-zsh/custom/plugins/{}".format(os.getenv("HOME"), plugin)
+        if os.path.isdir(dst):
+            shutil.rmtree(dst)
+        status = subprocess.Popen(["git", "clone", repo, dst],
+                stdout=DEV_NULL, stderr=DEV_NULL).wait()
+        if status != 0:
+            return spinner.fail(plugin)
+        spinner.succeed(plugin)
+
+
 def setup_omz():
     spinner = Halo(text="Oh-My-ZSH", spinner="dots")
     spinner.start()
@@ -88,3 +128,4 @@ def setup_omz():
     if status != 0:
         return spinner.fail("Oh-My-ZSH")
     spinner.succeed("Oh-My-ZSH")
+    zsh_plugins()

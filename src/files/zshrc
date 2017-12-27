@@ -4,7 +4,13 @@ export EDITOR="vim"
 
 ZSH_THEME="pygmalion"
 
-plugins=(git vi-mode zsh-syntax-highlighting)
+plugins=(
+  git
+  vi-mode
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  zsh-history-substring-search
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -35,25 +41,20 @@ bindkey -a u undo
 bindkey -a '^T' redo
 bindkey '^?' backward-delete-char  #backspace
 
-# history search in vim mode
-# http://zshwiki.org./home/zle/bindkeys#why_isn_t_control-r_working_anymore
-# ctrl+r to search history
-bindkey -M viins '^r' history-incremental-search-backward
-bindkey -M vicmd '^r' history-incremental-search-backward
-
-# custom exit
+# bind k and j for VI modmd-mode
 bindkey -M viins 'jk' vi-cmd-mode
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'l' history-substring-search-down
 
-# aliases
+# bind UP and DOWN arrow keys
+zmodload zsh/terminfo
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+bindkey "$terminfo[cuu1]" history-substring-search-up
+bindkey "$terminfo[cud1]" history-substring-search-down
+
+# alias
 alias sz="source $HOME/.zshrc"
 alias zc="$EDITOR $HOME/.zshrc"
 alias gPR="simple_pr"
 alias gcf="git commit --amend --no-edit"
-
-# tmux
-PS1="$PS1"'$([ -n "$TMUX" ] && tmux setenv TMUXPWD_$(tmux display -p "#D" | tr -d %) "$PWD")'
-#export TERM=screen-256color-bce
-export TERM=xterm-256color
-
-# Dirty Hack to load zsh-history-substring-search
-source $HOME/.oh-my-zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
