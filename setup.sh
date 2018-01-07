@@ -32,26 +32,17 @@ setup() {
   # tmp chackout to v2 branch
   git checkout js/v2
 
-  python_version=$(python -c 'import sys; print(sys.version_info[:][0])' 2> /dev/null)
-  python_name="python"
-  pip_name="python"
-
-  if [[ $python_version != "3" ]]; then
-     python_name="python3"
-     pip_name="pip3"
-  fi
-
-  if ! command -v $python_name &> /dev/null ; then
-     echo "Python 3.x is not istalled 😢" >&2
+  if ! command -v python3 &> /dev/null ; then
+     echo "python3 is not istalled 😢" >&2
      exit 1
-  elif ! command -v $pip_name &> /dev/null ; then
-      echo "Python-pip 3.x is not istalled 😢" >&2
+  elif ! command -v pip3 &> /dev/null ; then
+      echo "pip3 is not istalled 😢" >&2
       exit 1
   fi
 
-  $pip_name install -r requirements.txt 2>&1 &> /dev/null
+  pip3 install -r requirements.txt 2>&1 &> /dev/null
 
-  $python_name src/main.py
+  python3 src/main.py
 }
 
 # ----------------------------------------------------------------------

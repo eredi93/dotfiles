@@ -100,6 +100,7 @@ def git_pull_request(pr_name):
     response = sys_call(['hub', 'pull-request', '-m', '{}'.format(pr_name)])
     return response
 
+
 def git_origin_url():
     response = sys_call(['git', 'config', '--get', 'remote.origin.url'])
     if response.split('.')[-1] == 'git':
@@ -132,12 +133,12 @@ def git_flow(pr_name, branch_name, no_diff=False, no_pr=False):
 def send_to_slack(token, channel, msg):
     if get_slack_token(token) is None:
         sys.stderr.write('ERROR: Unable to find slack token.\n')
-        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment' \
-                'variables or in a ~/.slack.json.')
+        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment'
+                         'variables or in a ~/.slack.json.')
     if channel is None:
         channel = get_slack_channel()
     slack_cmd = ['slack', '--slack-api-token', token, 'chat', 'postMessage',
-            '--channel', channel, '--as_user', '"true"', '--text', msg]
+                 '--channel', channel, '--as_user', '"true"', '--text', msg]
     sys_call(slack_cmd)
 
 
@@ -147,7 +148,8 @@ def open_in_browser(os, url):
     elif os == 'linux':
         sys_call(['xdg-open', url])
     else:
-        sys.stderr.write('ERROR: os=>{} is not supported. Unable to get browser.'.format(os))
+        sys.stderr.write('ERROR: os=>{} is not supported. '
+                         'Unable to get browser.'.format(os))
 
 
 def copy_to_clipboard(os, msg):

@@ -5,6 +5,7 @@ HUB_VERSION = "2.2.9"
 PACKAGES = [
     ("vim --env-std --with-cscope --with-lua --with-override-system-vim", "vim"),
     ("the_silver_searcher", "silversearcher-ag"),
+    ("cmake", "build-essential cmake"),
     ("zsh", "zsh")
 ]
 UBUNTU_REPOSITORIES = [
