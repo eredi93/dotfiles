@@ -1,5 +1,4 @@
 import os
-import time
 import shutil
 import requests
 import subprocess
@@ -18,7 +17,7 @@ def update_ubuntu_repository(repo):
     spinner = Halo(text=text, spinner="dots")
     spinner.start()
     status = subprocess.Popen(["sudo", "add-apt-repository", "-y", repo],
-            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+                              stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail(text)
     spinner.succeed(text)
@@ -31,7 +30,7 @@ def update_ubuntu_repositories():
     spinner = Halo(text=text, spinner="dots")
     spinner.start()
     status = subprocess.Popen(["sudo", "apt-get", "update"],
-            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+                              stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail(text)
     spinner.succeed(text)
@@ -41,7 +40,7 @@ def install_with_brew(pack):
     spinner = Halo(text=pack, spinner="dots")
     spinner.start()
     status = subprocess.Popen(["brew", "install", pack],
-            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+                              stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail(pack)
     spinner.succeed(pack)
@@ -51,7 +50,7 @@ def install_with_apt(pack):
     spinner = Halo(text=pack, spinner="dots")
     spinner.start()
     status = subprocess.Popen(["sudo", "apt-get", "install", "-y", pack],
-            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+                              stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail(pack)
     spinner.succeed(pack)
@@ -67,7 +66,7 @@ def install_hub(sys_os):
     try:
         download_and_untar(url, hub_dir)
         status = subprocess.Popen(["sudo", "{}/install".format(hub_dir)],
-                stdout=DEV_NULL, stderr=DEV_NULL).wait()
+                                  stdout=DEV_NULL, stderr=DEV_NULL).wait()
         shutil.rmtree(hub_dir)
         if status != 0:
             return spinner.fail("hub")
@@ -79,12 +78,14 @@ def install_hub(sys_os):
 
 def install(sys_os):
     if sys_os == "macos":
-        for pack in [ x[0] for x in PACKAGES ]:
-            install_with_brew(pack)
+        for pack in [x[0] for x in PACKAGES]:
+            if pack is not None:
+                install_with_brew(pack)
     elif sys_os == "ubuntu":
         update_ubuntu_repositories()
-        for pack in [ x[1] for x in PACKAGES ]:
-            install_with_apt(pack)
+        for pack in [x[1] for x in PACKAGES]:
+            if pack is not None:
+                install_with_apt(pack)
     else:
         raise SetupError("Unsupported OS: {}".format(sys_os))
 
@@ -105,11 +106,12 @@ def zsh_plugins():
         spinner = Halo(text=plugin, spinner="dots")
         spinner.start()
         repo = "https://github.com/zsh-users/{}.git".format(plugin)
-        dst = "{}/.oh-my-zsh/custom/plugins/{}".format(os.getenv("HOME"), plugin)
+        dst = "{}/.oh-my-zsh/custom/plugins/{}".format(
+                os.getenv("HOME"), plugin)
         if os.path.isdir(dst):
             shutil.rmtree(dst)
         status = subprocess.Popen(["git", "clone", repo, dst],
-                stdout=DEV_NULL, stderr=DEV_NULL).wait()
+                                  stdout=DEV_NULL, stderr=DEV_NULL).wait()
         if status != 0:
             return spinner.fail(plugin)
         spinner.succeed(plugin)
@@ -118,14 +120,25 @@ def zsh_plugins():
 def setup_omz():
     spinner = Halo(text="Oh-My-ZSH", spinner="dots")
     spinner.start()
-    res = requests.get("https://raw.githubusercontent.com/robbyrussell/" \
-        "oh-my-zsh/master/tools/install.sh")
+    res = requests.get("https://raw.githubusercontent.com/robbyrussell/"
+                       "oh-my-zsh/master/tools/install.sh")
     if res.status_code != 200:
         return spinner.fail("Oh-My-ZSH")
 
     status = subprocess.Popen(["sh", "-c", "{} && exit".format(res.text)],
-            stdout=DEV_NULL, stderr=DEV_NULL).wait()
+                              stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail("Oh-My-ZSH")
     spinner.succeed("Oh-My-ZSH")
     zsh_plugins()
+
+
+def setup_tmux():
+    spinner = Halo(text="TMUX tpm", spinner="dots")
+    status = subprocess.Popen(["git", "clone",
+                               "https://github.com/tmux-plugins/tpm",
+                               "~/.tmux/plugins/tpm"],
+                              stdout=DEV_NULL, stderr=DEV_NULL).wait()
+    if status != 0:
+        return spinner.fail("TMUX tpm")
+    spinner.succeed("TMUX tpm")

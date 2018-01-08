@@ -8,8 +8,7 @@ import packages
 
 from errors import SetupError
 from constants import MINIMUM_MACOS_VERSION, MINIMUM_UBUNTU_VERSION
-from helpers import get_os, is_supported_version, print_in_magenta, \
-    download_and_untar
+from helpers import get_os, is_supported_version, print_in_magenta
 
 
 def verify_os(sys_os):
@@ -56,6 +55,7 @@ def setup(sys_os):
     packages.install(sys_os)
     packages.setup_zsh()
     packages.setup_omz()
+    packages.setup_tmux()
 
 
 def main():
