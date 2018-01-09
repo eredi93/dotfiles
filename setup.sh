@@ -23,22 +23,40 @@ ask_for_sudo() {
 
 }
 
-setup() {
+install_python3() {
+  os_name="$(uname -s)"
 
+  if command -v python3 &> /dev/null ; then
+    return 0
+  fi
+
+  if [ "$os_name" == "Darwin" ]; then
+    if ! command -v brew &> /dev/null ; then
+      /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+    fi
+
+    brew install python3
+    
+    return 0
+  elif [ "$os_name" == "Linux" ] && [ -e "/etc/lsb-release" ]; then
+    sudo apt install -y build-essential libssl-dev libffi-dev python3-dev python3-pip
+    return 0
+  else
+    printf "Sorry, this script is intended only for macOS and Ubuntu!"
+  fi
+
+  return 1
+}
+
+setup() {
   # Ensure that the following actions
   # are made relative to this file's path.
-
   cd "${1}" || exit 1
+
   # tmp chackout to v2 branch
   git checkout js/v2
 
-  if ! command -v python3 &> /dev/null ; then
-     echo "python3 is not istalled 😢" >&2
-     exit 1
-  elif ! command -v pip3 &> /dev/null ; then
-      echo "pip3 is not istalled 😢" >&2
-      exit 1
-  fi
+  install_python3
 
   pip3 install -r requirements.txt 2>&1 &> /dev/null
 

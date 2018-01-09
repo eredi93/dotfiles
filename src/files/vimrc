@@ -36,14 +36,17 @@ set encoding=utf-8
 set number
 set hidden
 set history=100
-set rnu
 set nocompatible
 set omnifunc=syntaxcomplete#Complete
-set enc=utf-8
-set fileencoding=utf-8
 set ignorecase
 set incsearch
 set laststatus=2
+
+try
+  set enc=utf-8
+  set fileencoding=utf-8
+catch
+endtry
 
 " clipboard
 if system('uname') == 'Linux'
@@ -53,14 +56,13 @@ else
 endif
 
 " theme
-syntax on
-colorscheme monokai
-set background=dark
-
 try
-   let g:airline_powerline_fonts = 1
-   set laststatus=2
-   let g:airline_theme='powerlineish'
+  syntax on
+  colorscheme monokai
+  set background=dark
+  let g:airline_powerline_fonts = 1
+  set laststatus=2
+  let g:airline_theme='powerlineish'
 catch
 endtry
 
@@ -101,9 +103,13 @@ nnoremap <C-H> <C-W><C-H>
 set splitbelow
 set splitright
 
+" File type
+autocmd BufRead,BufNewFile {*.markdown,*.mdown,*.mkdn,*.md,*.mkd,*.mdwn,*.mdtxt,*.mdtext,*.text} set filetype=markdown
+
 " 80 char line
 highlight OverLength ctermbg=red ctermfg=white guibg=#592929
 match OverLength /\%81v.\+/
+autocmd FileType markdown match none
 
 " indention
 filetype plugin indent on
@@ -122,13 +128,18 @@ autocmd BufWritePre * :%s/\s\+$//e
 " highlight
 set hlsearch
 set showmatch
-nnoremap <silent> <Esc> :nohlsearch<Bar>:echo<CR>
+nnoremap <silent> <leader>l :nohl<CR>
 
 " Change cursor shape between insert and normal mode in iTerm2.app
 if $TERM_PROGRAM =~ "iTerm"
     let &t_SI = "\<Esc>]50;CursorShape=1\x7" " Vertical bar in insert mode
     let &t_EI = "\<Esc>]50;CursorShape=0\x7" " Block in normal mode
 endif
+
+" Ale
+let g:ale_lint_on_text_changed = 0
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_save = 1
 
 " NerdTree
 map <C-n> :NERDTreeToggle<CR>
