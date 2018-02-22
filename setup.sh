@@ -32,17 +32,21 @@ install_python3() {
 
   if [ "$os_name" == "Darwin" ]; then
     if ! command -v brew &> /dev/null ; then
+      echo ">> Installing Brew"
       /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     fi
 
+    echo ">> Installing Python3"
     brew install python3
-    
+
     return 0
   elif [ "$os_name" == "Linux" ] && [ -e "/etc/lsb-release" ]; then
+    echo ">> Installing Python3"
     sudo apt install -y build-essential libssl-dev libffi-dev python3-dev python3-pip
+
     return 0
   else
-    printf "Sorry, this script is intended only for macOS and Ubuntu!"
+    echo "Sorry, this script is intended only for macOS and Ubuntu!"
   fi
 
   return 1
@@ -57,6 +61,7 @@ setup() {
 
   pip3 install -r requirements.txt 2>&1 &> /dev/null
 
+  echo ">> Setup Environment"
   python3 src/main.py
 }
 
