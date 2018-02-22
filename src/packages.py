@@ -10,6 +10,7 @@ from errors import SetupError
 
 
 DEV_NULL = subprocess.PIPE
+HOME = os.getenv("HOME")
 
 
 def update_ubuntu_repository(repo):
@@ -113,8 +114,7 @@ def zsh_plugins():
         spinner = Halo(text=plugin, spinner="dots")
         spinner.start()
         repo = "https://github.com/zsh-users/{}.git".format(plugin)
-        dst = "{}/.oh-my-zsh/custom/plugins/{}".format(
-                os.getenv("HOME"), plugin)
+        dst = "{}/.oh-my-zsh/custom/plugins/{}".format(HOME, plugin)
         if os.path.isdir(dst):
             shutil.rmtree(dst)
         status = subprocess.Popen(["git", "clone", repo, dst],
@@ -144,7 +144,7 @@ def setup_tmux():
     spinner = Halo(text="TMUX tpm", spinner="dots")
     status = subprocess.Popen(["git", "clone",
                                "https://github.com/tmux-plugins/tpm",
-                               "~/.tmux/plugins/tpm"],
+                               "{}/.tmux/plugins/tpm".format(HOME)],
                               stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail("TMUX tpm")
