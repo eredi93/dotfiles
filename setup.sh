@@ -53,9 +53,6 @@ setup() {
   # are made relative to this file's path.
   cd "${1}" || exit 1
 
-  # tmp chackout to v2 branch
-  git checkout js/v2
-
   install_python3
 
   pip3 install -r requirements.txt 2>&1 &> /dev/null
