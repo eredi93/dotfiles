@@ -100,7 +100,7 @@ def setup_zsh():
 
     with open('/etc/shells') as f:
         if zsh not in f.read():
-            os.popen("sudo echo '{}' >> /etc/shells".format(zsh))
+            os.popen("sudo sh -c \"echo '{}' >> /etc/shells\"".format(zsh))
 
     spinner = Halo()
     if os.system("chsh -s {}".format(zsh)) != 0:
