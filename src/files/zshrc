@@ -64,3 +64,5 @@ alias gcf="git commit --amend --no-edit"
 if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   export DISPLAY=localhost:0.0
 fi
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

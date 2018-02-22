@@ -39,7 +39,8 @@ def update_ubuntu_repositories():
 def install_with_brew(pack):
     spinner = Halo(text=pack, spinner="dots")
     spinner.start()
-    status = subprocess.Popen(["brew", "install", pack],
+    base_command = ["brew", "install"]
+    status = subprocess.Popen(base_command + pack.split(" "),
                               stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail(pack)
@@ -49,7 +50,8 @@ def install_with_brew(pack):
 def install_with_apt(pack):
     spinner = Halo(text=pack, spinner="dots")
     spinner.start()
-    status = subprocess.Popen(["sudo", "apt-get", "install", "-y", pack],
+    base_command = ["sudo", "apt-get", "install", "-y"]
+    status = subprocess.Popen(base_command + pack.split(" "),
                               stdout=DEV_NULL, stderr=DEV_NULL).wait()
     if status != 0:
         return spinner.fail(pack)
