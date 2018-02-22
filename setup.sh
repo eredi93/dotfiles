@@ -83,7 +83,7 @@ main() {
 
     rm -rf $dotfiles_dir
 
-    git clone https://github.com/eredi93/dotfiles.git $dotfiles_dir &> /dev/null
+    git clone git@github.com:eredi93/dotfiles.git $dotfiles_dir &> /dev/null
 
     setup $dotfiles_dir
 }
