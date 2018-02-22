@@ -1,12 +1,11 @@
 # This is Git's per-user configuration file.
 [user]
-# Please adapt and uncomment the following lines:
 name = Jacopo Scrinzi
 email = scrinzi.jacopo@gmail.com
 [push]
-       	default = current
+	default = current
 [pull]
-       	default = current
+	default = current
 [github]
 	user = eredi93
 [ghi]

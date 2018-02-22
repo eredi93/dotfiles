@@ -1,0 +1,156 @@
+" install plug if not installed
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall | source $MYVIMRC
+endif
+
+call plug#begin('~/.vim/plugged')
+
+" Bundles
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'crusoexia/vim-monokai'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'mhinz/vim-grepper'
+Plug 'Valloric/YouCompleteMe', { 'do': 'python3 install.py' }
+Plug 'scrooloose/nerdtree'
+Plug 'scrooloose/nerdcommenter'
+Plug 'tpope/vim-surround'
+Plug 'w0rp/ale' " replacement scrooloose/syntastic
+Plug 'vim-ruby/vim-ruby'
+Plug 'hashivim/vim-terraform'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-rhubarb'
+Plug 'gregsexton/gitv', {'on': ['Gitv']}
+Plug 'christoomey/vim-tmux-navigator'
+"Plug 'fatih/vim-go'
+
+call plug#end()
+
+" Config
+" ======
+set t_Co=256
+set encoding=utf-8
+set number
+set hidden
+set history=100
+set nocompatible
+set omnifunc=syntaxcomplete#Complete
+set ignorecase
+set incsearch
+set laststatus=2
+
+try
+  set enc=utf-8
+  set fileencoding=utf-8
+catch
+endtry
+
+" clipboard
+if system('uname') == 'Linux'
+  set clipboard=unnamedplus
+else
+  set clipboard=unnamed
+endif
+
+" theme
+try
+  syntax on
+  colorscheme monokai
+  set background=dark
+  let g:airline_powerline_fonts = 1
+  set laststatus=2
+  let g:airline_theme='powerlineish'
+catch
+endtry
+
+" Map leader
+let mapleader=','
+
+" Spell
+set spelllang=en_gb
+set complete+=kspell
+nmap <leader>sc :set spell<CR>
+nmap <leader>ns :set nospell<CR>
+
+let g:Powerline_symbols = 'fancy'
+
+" Quickly edit/reload the vimrc file
+
+nmap <silent> <leader>ev :e $MYVIMRC<CR>
+nmap <silent> <leader>sv :so $MYVIMRC<CR>
+
+" Map keys
+imap jk <ESC>
+
+" Arrows are unvimlike
+nnoremap <up> <nop>
+nnoremap <down> <nop>
+nnoremap <left> <nop>
+nnoremap <right> <nop>
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
+
+" splits
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+set splitbelow
+set splitright
+
+" File type
+autocmd BufRead,BufNewFile {*.markdown,*.mdown,*.mkdn,*.md,*.mkd,*.mdwn,*.mdtxt,*.mdtext,*.text} set filetype=markdown
+
+" 80 char line
+highlight OverLength ctermbg=red ctermfg=white guibg=#592929
+match OverLength /\%81v.\+/
+autocmd FileType markdown match none
+
+" indention
+filetype plugin indent on
+set nowrap
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set smartindent
+set autoindent
+set expandtab
+autocmd Filetype python setlocal ts=4 sw=4 sts=0 expandtab
+
+" autoremove white spaces on save
+autocmd BufWritePre * :%s/\s\+$//e
+
+" highlight
+set hlsearch
+set showmatch
+nnoremap <silent> <leader>l :nohl<CR>
+
+" Change cursor shape between insert and normal mode in iTerm2.app
+if $TERM_PROGRAM =~ "iTerm"
+    let &t_SI = "\<Esc>]50;CursorShape=1\x7" " Vertical bar in insert mode
+    let &t_EI = "\<Esc>]50;CursorShape=0\x7" " Block in normal mode
+endif
+
+" Ale
+let g:ale_lint_on_text_changed = 0
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_save = 1
+
+" NerdTree
+map <C-n> :NERDTreeToggle<CR>
+
+" fzf
+map <C-p> :Files<CR>
+
+" Grepper
+map <C-g> :Grepper -tool ag<CR>
+nmap gs <plug>(GrepperOperator)
+xmap gs <plug>(GrepperOperator)
+
+" fmt
+let g:terraform_fmt_on_save = 1
