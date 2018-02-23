@@ -37,6 +37,10 @@ def create_symbolic_links():
     for src in glob.iglob("{}/*".format(src_dir)):
         file_name = os.path.basename(src)
         dst = "{}/.{}".format(dst_dir, file_name)
+        dsr_dir = os.path.dirname(dst)
+        if not os.path.exists(dsr_dir):
+            os.makedirs(dst_dir)
+
         spinner = Halo(text="{} → {}".format(src, dst), spinner="dots")
         spinner.start()
         try:
