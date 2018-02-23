@@ -56,7 +56,7 @@ bindkey "$terminfo[cud1]" history-substring-search-down
 # alias
 alias sz="source $HOME/.zshrc"
 alias zc="$EDITOR $HOME/.zshrc"
-alias gPR="simple_pr"
+alias gPR="simple-pr"
 alias gcf="git commit --amend --no-edit"
 
 # WSL clipboard hack
