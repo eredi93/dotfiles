@@ -14,18 +14,26 @@ Plug 'crusoexia/vim-monokai'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'mhinz/vim-grepper'
-Plug 'Valloric/YouCompleteMe', { 'do': 'python3 install.py' }
+Plug 'roxma/nvim-yarp' " required for deoplete
+Plug 'roxma/vim-hug-neovim-rpc' " required for deoplete
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'ervandew/supertab'
 Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
+Plug 'matze/vim-move' " Move blocks of code with ALT+j/k
 Plug 'w0rp/ale' " replacement scrooloose/syntastic
 Plug 'vim-ruby/vim-ruby'
+Plug 'tpope/vim-endwise' " Add 'end' to ruby blocks
 Plug 'hashivim/vim-terraform'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'gregsexton/gitv', {'on': ['Gitv']}
 Plug 'christoomey/vim-tmux-navigator'
-"Plug 'fatih/vim-go'
+Plug 'fatih/vim-go'
+Plug 'jceb/vim-orgmode'
+Plug 'tpope/vim-speeddating'
+Plug 'thoughtbot/vim-rspec'
 
 call plug#end()
 
@@ -41,6 +49,7 @@ set omnifunc=syntaxcomplete#Complete
 set ignorecase
 set incsearch
 set laststatus=2
+set backspace=indent,eol,start
 
 try
   set enc=utf-8
@@ -67,7 +76,7 @@ catch
 endtry
 
 " Map leader
-let mapleader=','
+let mapleader=' '
 
 " Spell
 set spelllang=en_gb
@@ -106,11 +115,6 @@ set splitright
 " File type
 autocmd BufRead,BufNewFile {*.markdown,*.mdown,*.mkdn,*.md,*.mkd,*.mdwn,*.mdtxt,*.mdtext,*.text} set filetype=markdown
 
-" 80 char line
-highlight OverLength ctermbg=red ctermfg=white guibg=#592929
-match OverLength /\%81v.\+/
-autocmd FileType markdown match none
-
 " indention
 filetype plugin indent on
 set nowrap
@@ -122,13 +126,20 @@ set autoindent
 set expandtab
 autocmd Filetype python setlocal ts=4 sw=4 sts=0 expandtab
 
+inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+
+" make supertab close the tern preview
+let g:SuperTabClosePreviewOnPopupClose = 1
+" make supertab move down instead of up
+let g:SuperTabDefaultCompletionType = "<c-n>"
+
 " autoremove white spaces on save
 autocmd BufWritePre * :%s/\s\+$//e
 
 " highlight
 set hlsearch
 set showmatch
-nnoremap <silent> <leader>l :nohl<CR>
+nnoremap <silent> <leader>nh :nohl<CR>
 
 " Change cursor shape between insert and normal mode in iTerm2.app
 if $TERM_PROGRAM =~ "iTerm"
@@ -136,13 +147,33 @@ if $TERM_PROGRAM =~ "iTerm"
     let &t_EI = "\<Esc>]50;CursorShape=0\x7" " Block in normal mode
 endif
 
+" Tabs with Buffers
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
+" To open a new empty buffer
+nmap <leader>T :enew<cr>
+" Move to the next buffer
+nmap <leader>l :bnext<CR>
+" Move to the previous buffer
+nmap <leader>h :bprevious<CR>
+" Close the current buffer and move to the previous one
+nmap <leader>q :bp <BAR> bd #<CR>
+" Show all open buffers and their status
+nmap <leader>bl :ls<CR>
+
+" deoplete.nvim
+let g:deoplete#enable_at_startup = 1
 " Ale
-let g:ale_lint_on_text_changed = 0
-let g:ale_lint_on_enter = 0
-let g:ale_lint_on_save = 1
+let g:ale_fixers = {
+\   'ruby': ['rubocop'],
+\}
+let g:ale_enabled = 1
+let g:ale_fix_on_save = 1
+let g:ale_sign_column_always = 1
 
 " NerdTree
 map <C-n> :NERDTreeToggle<CR>
+" autocmd FileType nerdtree nmap <buffer> <CR> go
 
 " fzf
 map <C-p> :Files<CR>
@@ -152,5 +183,20 @@ map <C-g> :Grepper -tool ag<CR>
 nmap gs <plug>(GrepperOperator)
 xmap gs <plug>(GrepperOperator)
 
-" fmt
+" Golang
+let g:go_disable_autoinstall = 0
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+
+" Terraform
 let g:terraform_fmt_on_save = 1
+
+" Rspec
+let g:rspec_command = '!run-rspec {spec}'
+map <Leader>sf :call RunCurrentSpecFile()<CR>
+map <Leader>sn :call RunNearestSpec()<CR>
+map <Leader>sl :call RunLastSpec()<CR>
+map <Leader>sa :call RunAllSpecs()<CR>

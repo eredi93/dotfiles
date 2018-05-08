@@ -10,3 +10,5 @@ email = scrinzi.jacopo@gmail.com
 	user = eredi93
 [ghi]
 	token = !security find-internet-password -a eredi93 -s github.com -l 'ghi token' -w
+[protocol]
+	version = 2

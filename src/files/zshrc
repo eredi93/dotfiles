@@ -1,6 +1,7 @@
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="vim"
+export DISABLE_UPDATE_PROMPT=true
 
 ZSH_THEME="pygmalion"
 
@@ -53,11 +54,27 @@ bindkey "$terminfo[kcud1]" history-substring-search-down
 bindkey "$terminfo[cuu1]" history-substring-search-up
 bindkey "$terminfo[cud1]" history-substring-search-down
 
+# path
+export PATH=$HOME/.bin:$PATH
+
 # alias
 alias sz="source $HOME/.zshrc"
 alias zc="$EDITOR $HOME/.zshrc"
 alias gPR="simple-pr"
 alias gcf="git commit --amend --no-edit"
+alias gfu="git add . && git commit --amend --no-edit && git push -f"
+
+function vimgst () {
+  g_st=($(git status --porcelain | awk '{print $2}'))
+  index="${1:-1}"
+  vim $g_st[index]
+}
+
+function cbgst () {
+  g_st=($(git status --porcelain | awk '{print $2}'))
+  index="${1:-1}"
+  printf "%s" $g_st[index] | pbcopy
+}
 
 # WSL clipboard hack
 # https://github.com/Microsoft/WSL/issues/892#issuecomment-275873108

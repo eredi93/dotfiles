@@ -4,7 +4,7 @@ MINIMUM_UBUNTU_VERSION = "14.04"
 HUB_VERSION = "2.2.9"
 PACKAGES = [
     (
-        "vim --env-std --with-cscope --with-lua --with-override-system-vim",
+        "vim --with-lua --with-override-system-vi --with-python",
         "vim"
     ),
     ("the_silver_searcher", "silversearcher-ag"),
