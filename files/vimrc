@@ -114,6 +114,7 @@ set splitright
 
 " File type
 autocmd BufRead,BufNewFile {*.markdown,*.mdown,*.mkdn,*.md,*.mkd,*.mdwn,*.mdtxt,*.mdtext,*.text} set filetype=markdown
+autocmd BufRead,BufNewFile {Brewfile} set filetype=ruby
 
 " indention
 filetype plugin indent on

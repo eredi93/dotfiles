@@ -33,38 +33,11 @@ def load_config(config_file):
     return config
 
 
-def get_slack_token(token):
-    if 'SLACK_TOKEN' in os.environ:
-        return os.environ['SLACK_TOKEN']
-    return token
-
-
-def get_slack_channel():
-    if 'SLACK_CHANNEL' in os.environ:
-        return os.environ['SLACK_CHANNEL']
-    return None
-
-
-def get_slack_msg(pr_link, slack_msg):
-    if slack_msg is None:
-        if 'SLACK_MSG' not in os.environ:
-            return pr_link
-        slack_msg = os.environ['SLACK_MSG']
-    return '{} {}'.format(pr_link, slack_msg)
-
-
 def update_from_config(args, config):
     for arg in vars(args):
         if getattr(args, arg) is None and arg in config:
             setattr(args, arg, config[arg])
     return args
-
-
-def is_slack_available():
-    if sys_call(['which', 'slack'], return_code=True) != 0:
-        sys.stderr.write('ERROR: slack not found.')
-        return False
-    return True
 
 
 def get_os():
@@ -119,27 +92,18 @@ def ask_for_git_diff():
             break
 
 
-def git_flow(pr_name, branch_name, no_diff=False, no_pr=False):
+def git_flow(pr_name, branch_name, diff=False, no_pr=False):
     git_checkout(branch_name)
     git_add()
-    if not no_diff: ask_for_git_diff()
+
+    if diff:
+        ask_for_git_diff()
+
     git_commit(pr_name)
     git_push(branch_name)
     if no_pr:
         return git_origin_url()
     return git_pull_request(pr_name)
-
-
-def send_to_slack(token, channel, msg):
-    if get_slack_token(token) is None:
-        sys.stderr.write('ERROR: Unable to find slack token.\n')
-        sys.stderr.write('I\'m looking for SLACK_TOKEN in the enviroment'
-                         'variables or in a ~/.slack.json.')
-    if channel is None:
-        channel = get_slack_channel()
-    slack_cmd = ['slack', '--slack-api-token', token, 'chat', 'postMessage',
-                 '--channel', channel, '--as_user', '"true"', '--text', msg]
-    sys_call(slack_cmd)
 
 
 def open_in_browser(os, url):
@@ -164,10 +128,7 @@ def main(args):
     args = update_from_config(args, config)
     pr_name = args.name.strip(' \'"')
     branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
-    pr_link = git_flow(pr_name, branch_name, args.no_diff, args.no_pr)
-    slack_msg = get_slack_msg(pr_link, args.slack_msg)
-    if args.send_slack and is_slack_available():
-        send_to_slack(args.slack_token, args.slack_channel, slack_msg)
+    pr_link = git_flow(pr_name, branch_name, args.diff, args.no_pr)
     os = get_os()
     if args.browser:
         open_in_browser(os, pr_link)
@@ -182,12 +143,7 @@ if __name__ == "__main__":
             help='pass custom config file. by default it looks for ~/.simple_pr.json')
     parser.add_argument('-b', '--browser', default=True, action='store_true',
             help='open the PR in the browser.')
-    parser.add_argument('-s', '--send_slack', default=False, action='store_true',
-            help='send notification to slack.')
-    parser.add_argument('-m', '--slack_msg', help='slack message')
-    parser.add_argument('--slack_token', help='slack token')
-    parser.add_argument('--slack_channel', help='slack channel')
-    parser.add_argument('--no_diff',action='store_true', help='do not ask for diff')
+    parser.add_argument('--diff',action='store_true', help='do not ask for diff')
     parser.add_argument('--no_pr', action='store_true',
             help='do not create the PR just push the branch')
     args = parser.parse_args()
