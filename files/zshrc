@@ -1,3 +1,14 @@
+# Display message if uncommitted files
+script_path="${HOME}/.zshrc"
+script_dir="$(dirname "$(realpath "${script_path}")")"
+repo_dir="$(dirname "${script_dir}")"
+if [[ $(cd "${repo_dir}" && git status --porcelain) ]]; then
+  echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+  echo "--> It seems that ${repo_dir} have uncommitted files."
+  echo "--> Commited them! Don't be a lazy fucker."
+  echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="vim"
