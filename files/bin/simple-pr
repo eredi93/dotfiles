@@ -22,24 +22,6 @@ def sys_call(cmd, return_code=False):
     return out.strip('\n')
 
 
-def load_config(config_file):
-    try:
-        if os.stat(config_file).st_size == 0: return {}
-        with open(config_file) as f:
-            config = json.load(f)
-    except FileNotFoundError:
-        sys.stdout.write('WARNING: file=>{} not found\n'.format(config_file))
-        return {}
-    return config
-
-
-def update_from_config(args, config):
-    for arg in vars(args):
-        if getattr(args, arg) is None and arg in config:
-            setattr(args, arg, config[arg])
-    return args
-
-
 def get_os():
     return sys_call(['uname']).lower()
 
@@ -124,8 +106,6 @@ def copy_to_clipboard(os, msg):
 
 
 def main(args):
-    config = load_config(args.config_file)
-    args = update_from_config(args, config)
     pr_name = args.name.strip(' \'"')
     branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
     pr_link = git_flow(pr_name, branch_name, args.diff, args.no_pr)
@@ -139,8 +119,6 @@ if __name__ == "__main__":
     home_dir = os.environ['HOME']
     parser = argparse.ArgumentParser(description='create a simple GitHub PR')
     parser.add_argument('name', help='simple PR name')
-    parser.add_argument('-f', '--config_file', default='{}/.simple_pr.json'.format(home_dir),
-            help='pass custom config file. by default it looks for ~/.simple_pr.json')
     parser.add_argument('-b', '--browser', default=True, action='store_true',
             help='open the PR in the browser.')
     parser.add_argument('--diff',action='store_true', help='do not ask for diff')
