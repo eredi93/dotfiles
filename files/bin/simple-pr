@@ -1,7 +1,6 @@
 #! /usr/bin/env python3
 import argparse
 import subprocess
-import json
 import sys
 import os
 import re
@@ -10,14 +9,21 @@ import re
 def sys_call(cmd, return_code=False):
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     out, err = p.communicate()
-    if out is not None: out = out.decode('utf-8')
-    if err is not None: err = err.decode('utf-8')
+    if out is not None:
+        out = out.decode('utf-8')
+    if err is not None:
+        err = err.decode('utf-8')
     returncode = p.returncode
-    if return_code is True: return returncode
+    if return_code is True:
+        return returncode
     if returncode != 0:
-        sys.stderr.write('ERROR: got {} when running {}\n'.format(returncode, cmd))
-        if out is not None: sys.stdout.write('{}'.format(out))
-        if err is not None: sys.stderr.write('{}'.format(err))
+        sys.stderr.write(
+            'ERROR: got {} when running {}\n'.format(returncode, cmd)
+        )
+        if out is not None:
+            sys.stdout.write('{}'.format(out))
+        if err is not None:
+            sys.stderr.write('{}'.format(err))
         sys.exit(returncode)
     return out.strip('\n')
 
@@ -31,8 +37,9 @@ def get_clipboard(os):
         return 'pbcopy'
     elif os == 'linux':
         return 'pbcopy'
-    else:
-        sys.stderr.write('ERROR: os=>{} is not supported. Unable to get clipboard\n'.format(os))
+    sys.stderr.write(
+        'ERROR: os=>{} is not supported. Unable to get clipboard\n'.format(os)
+    )
 
 
 def git_checkout(branch_name):
@@ -51,9 +58,11 @@ def git_push(branch_name):
     sys_call(['git', 'push', 'origin', branch_name])
 
 
-def git_pull_request(pr_name):
-    response = sys_call(['hub', 'pull-request', '-m', '{}'.format(pr_name)])
-    return response
+def git_pull_request(pr_name, draft):
+    hub_cmd = ['hub', 'pull-request', '-m', '{}'.format(pr_name)]
+    if draft is True:
+        hub_cmd.append('--draft')
+    return sys_call(hub_cmd)
 
 
 def git_origin_url():
@@ -74,7 +83,7 @@ def ask_for_git_diff():
             break
 
 
-def git_flow(pr_name, branch_name, diff=False, no_pr=False):
+def git_flow(pr_name, branch_name, diff=False, no_pr=False, draft=True):
     git_checkout(branch_name)
     git_add()
 
@@ -85,7 +94,7 @@ def git_flow(pr_name, branch_name, diff=False, no_pr=False):
     git_push(branch_name)
     if no_pr:
         return git_origin_url()
-    return git_pull_request(pr_name)
+    return git_pull_request(pr_name, draft)
 
 
 def open_in_browser(os, url):
@@ -108,7 +117,7 @@ def copy_to_clipboard(os, msg):
 def main(args):
     pr_name = args.name.strip(' \'"')
     branch_name = 'js/{}'.format(pr_name.replace(' ', '_'))
-    pr_link = git_flow(pr_name, branch_name, args.diff, args.no_pr)
+    pr_link = git_flow(pr_name, branch_name, args.diff, args.no_pr, args.draft)
     os = get_os()
     if args.browser:
         open_in_browser(os, pr_link)
@@ -120,9 +129,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='create a simple GitHub PR')
     parser.add_argument('name', help='simple PR name')
     parser.add_argument('-b', '--browser', default=True, action='store_true',
-            help='open the PR in the browser.')
-    parser.add_argument('--diff',action='store_true', help='do not ask for diff')
+                        help='open the PR in the browser.')
+    parser.add_argument('--draft', action='store_true', default=True,
+                        help='create the PR as a draft')
+    parser.add_argument('--diff', action='store_true',
+                        help='do not ask for diff')
     parser.add_argument('--no_pr', action='store_true',
-            help='do not create the PR just push the branch')
+                        help='do not create the PR just push the branch')
     args = parser.parse_args()
+
     main(args)
