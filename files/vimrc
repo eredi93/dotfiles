@@ -42,8 +42,6 @@ Plug 'tpope/vim-rhubarb'
 Plug 'gregsexton/gitv', {'on': ['Gitv']}
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'fatih/vim-go'
-Plug 'jceb/vim-orgmode'
-Plug 'tpope/vim-speeddating'
 Plug 'thoughtbot/vim-rspec'
 
 call plug#end()
