@@ -12,3 +12,5 @@ email = scrinzi.jacopo@gmail.com
 	token = !security find-internet-password -a eredi93 -s github.com -l 'ghi token' -w
 [protocol]
 	version = 2
+[url "git@github.com:"]
+    insteadOf = "https://github.com/"
