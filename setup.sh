@@ -105,10 +105,10 @@ setup() {
   cd "${1}" || exit 1
 
   setup_zsh
-  create_symbolic_links
   install_oh_my_zsh
   oh_my_zsh_plugins
   tmux_tpm
+  create_symbolic_links
 
   echo "Dotfiles setup completed!"
 }
