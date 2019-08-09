@@ -49,7 +49,7 @@ setup_zsh() {
     sudo sh -c "echo '${zsh_bin}' >> /etc/shells"
   fi
 
-  sudo chsh -s "${zsh_bin}" "${USER}"
+  sudo usermod --shell "${zsh_bin}" "$(whoami)"
 }
 
 create_symbolic_links() {
