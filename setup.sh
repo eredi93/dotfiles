@@ -73,7 +73,7 @@ create_symbolic_links() {
 
 install_oh_my_zsh() {
   echo -e ">> Installing Oh My ZSH\n"
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh) --unattended"
 }
 
 oh_my_zsh_plugins() {
