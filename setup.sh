@@ -49,7 +49,11 @@ setup_zsh() {
     sudo sh -c "echo '${zsh_bin}' >> /etc/shells"
   fi
 
-  sudo usermod --shell "${zsh_bin}" "$(whoami)"
+  if [[ $(uname) == "Linux" ]]; then
+    sudo usermod --shell "${zsh_bin}" "$(whoami)"
+  else
+    sudo dscl . -create "/Users/${USER}" UserShell /usr/local/bin/zsh
+  fi
 }
 
 create_symbolic_links() {
