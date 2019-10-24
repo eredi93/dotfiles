@@ -76,6 +76,11 @@ create_symbolic_links() {
 }
 
 install_oh_my_zsh() {
+  if [ -d "${HOME}/.oh-my-zsh" ]; then
+    echo -e ">> Oh My ZSH already installed. Reinstall....\n"
+    rm -rf "${HOME}/.oh-my-zsh"
+  fi
+
   echo -e ">> Installing Oh My ZSH\n"
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh) --unattended"
 }
