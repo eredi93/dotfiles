@@ -23,7 +23,11 @@ try:
     import neovim
 except ImportError:
     import subprocess
-    subprocess.call(['pip3', 'install', '--user', 'pynvim'])
+
+    # https://github.com/roxma/vim-hug-neovim-rpc/issues/47
+    subprocess.call(
+        ['PATH="/usr/local/opt/python@3.8/bin:$PATH"', 'pip3', 'install', 'pynvim']
+    )
 endpy
 
 Plug 'roxma/nvim-yarp' " required for deoplete
@@ -41,7 +45,8 @@ Plug 'hashivim/vim-terraform'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'gregsexton/gitv', {'on': ['Gitv']}
-Plug 'christoomey/vim-tmux-navigator'
+Plug 'tmux-plugins/vim-tmux-focus-events'
+Plug 'tmux-plugins/vim-tmux'
 Plug 'fatih/vim-go'
 Plug 'thoughtbot/vim-rspec'
 
@@ -190,7 +195,7 @@ map <C-n> :NERDTreeToggle<CR>
 map <C-p> :Files<CR>
 
 " Grepper
-map <C-g> :Grepper -tool ag<CR>
+map <C-g> :Grepper -tool rg<CR>
 nmap gs <plug>(GrepperOperator)
 xmap gs <plug>(GrepperOperator)
 
