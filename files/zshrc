@@ -31,7 +31,7 @@ alias sz="source $HOME/.zshrc"
 alias zc="$EDITOR $HOME/.zshrc"
 alias gPR="simple-pr"
 alias gcf="git commit --amend --no-edit"
-alias gfu="git add . && git commit --amend --no-edit && git push -f"
+alias gfu="git add . && git commit --amend --no-edit && git push --force-with-lease"
 
 function vimgst () {
   g_st=($(git status --porcelain | awk '{print $2}'))
@@ -43,6 +43,10 @@ function cbgst () {
   g_st=($(git status --porcelain | awk '{print $2}'))
   index="${1:-1}"
   printf "%s" $g_st[index] | pbcopy
+}
+
+function urldecode () {
+  echo -n "${1}" | python3 -c "import sys; from urllib.parse import unquote; print(unquote(sys.stdin.read()));"
 }
 
 # WSL clipboard hack

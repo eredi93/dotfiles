@@ -11,7 +11,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'crusoexia/vim-monokai'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'wincent/vim-clipper'
 Plug 'mhinz/vim-grepper'
@@ -32,7 +32,7 @@ endpy
 
 Plug 'roxma/nvim-yarp' " required for deoplete
 Plug 'roxma/vim-hug-neovim-rpc' " required for deoplete
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/deoplete.nvim'
 Plug 'ervandew/supertab'
 Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
@@ -183,6 +183,8 @@ let g:deoplete#enable_at_startup = 1
 let g:ale_fixers = {
 \   'ruby': ['rubocop'],
 \}
+
+let g:ale_ruby_rubocop_executable = 'bundle'
 let g:ale_enabled = 1
 let g:ale_fix_on_save = 1
 let g:ale_sign_column_always = 1
