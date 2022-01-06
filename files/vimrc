@@ -23,10 +23,15 @@ try:
     import neovim
 except ImportError:
     import subprocess
+    import os
 
+    env = dict(os.environ)
+    path = env['PATH']
+    env['PATH'] = '/usr/local/opt/python@3.10/bin:{}'.format(path)
     # https://github.com/roxma/vim-hug-neovim-rpc/issues/47
     subprocess.call(
-        ['PATH="/usr/local/opt/python@3.8/bin:$PATH"', 'pip3', 'install', 'pynvim']
+        ['pip3', 'install', 'pynvim'],
+	      env=env
     )
 endpy
 
