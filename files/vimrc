@@ -54,6 +54,11 @@ Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'tmux-plugins/vim-tmux'
 Plug 'fatih/vim-go'
 Plug 'thoughtbot/vim-rspec'
+Plug 'joukevandermaas/vim-ember-hbs'
+Plug 'othree/html5.vim'
+Plug 'othree/yajs.vim'
+Plug 'othree/es.next.syntax.vim'
+Plug 'cakebaker/scss-syntax.vim'
 
 call plug#end()
 
