@@ -49,6 +49,20 @@ function urldecode () {
   echo -n "${1}" | python3 -c "import sys; from urllib.parse import unquote; print(unquote(sys.stdin.read()));"
 }
 
+
+# Git override
+unalias gcm 2>/dev/null
+
+function gcm () {
+  master_rev=$(git rev-parse --verify master 2>/dev/null)
+  if [ -z "${master_rev}" ]; then
+    # master_rev is empty (i.e. master branch not present)
+    git checkout main
+  else
+    git checkout master
+  fi
+}
+
 # WSL clipboard hack
 # https://github.com/Microsoft/WSL/issues/892#issuecomment-275873108
 if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null ; then
