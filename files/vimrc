@@ -43,7 +43,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
 Plug 'tpope/vim-surround'
 Plug 'matze/vim-move' " Move blocks of code with ALT+j/k
-Plug 'w0rp/ale' " replacement scrooloose/syntastic
+Plug 'dense-analysis/ale' " replacement scrooloose/syntastic
 Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-endwise' " Add 'end' to ruby blocks
 Plug 'hashivim/vim-terraform'
@@ -192,12 +192,23 @@ let g:deoplete#enable_at_startup = 1
 " Ale
 let g:ale_fixers = {
 \   'ruby': ['rubocop'],
+\   'javascript': ['prettier', 'eslint'],
+\   'css': ['prettier'],
+\   'sass': ['stylelint'],
+\   'scss': ['stylelint'],
+\   'html.handlebars': ['prettier'],
 \}
 
+let b:ale_linters = {
+\  'javascript': ['eslint'],
+\  'sass': ['sasslint'],
+\  'html.handlebars': ['embertemplatelint'],
+\}
 
 let g:ale_ruby_rubocop_executable = 'bundle'
 let g:ale_enabled = 1
 let g:ale_fix_on_save = 1
+let g:ale_linters_explicit = 1
 let g:ale_sign_column_always = 1
 
 " NerdTree

@@ -83,7 +83,7 @@ def ask_for_git_diff():
             break
 
 
-def git_flow(pr_name, branch_name, diff=False, no_pr=False, draft=True):
+def git_flow(pr_name, branch_name, diff=False, no_pr=False, draft=False):
     git_checkout(branch_name)
     git_add()
 
@@ -130,7 +130,7 @@ if __name__ == "__main__":
     parser.add_argument('name', help='simple PR name')
     parser.add_argument('-b', '--browser', default=True, action='store_true',
                         help='open the PR in the browser.')
-    parser.add_argument('--draft', action='store_true', default=True,
+    parser.add_argument('--draft', action='store_true', default=False,
                         help='create the PR as a draft')
     parser.add_argument('--diff', action='store_true',
                         help='do not ask for diff')
