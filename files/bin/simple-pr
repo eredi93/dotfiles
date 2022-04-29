@@ -59,7 +59,7 @@ def git_push(branch_name):
 
 
 def git_pull_request(pr_name, draft):
-    hub_cmd = ['hub', 'pull-request', '-m', '{}'.format(pr_name)]
+    hub_cmd = ['gh', 'pr', '-t', '{}'.format(pr_name)]
     if draft is True:
         hub_cmd.append('--draft')
     return sys_call(hub_cmd)

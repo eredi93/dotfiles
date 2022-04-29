@@ -52,7 +52,7 @@ setup_zsh() {
   if [[ $(uname) == "Linux" ]]; then
     sudo usermod --shell "${zsh_bin}" "$(whoami)"
   else
-    sudo dscl . -create "/Users/${USER}" UserShell /usr/local/bin/zsh
+    sudo dscl . -create "/Users/${USER}" UserShell /opt/homebrew/bin/zsh
   fi
 }
 
