@@ -4,6 +4,7 @@ name = Jacopo Scrinzi
 email = scrinzi.jacopo@gmail.com
 [push]
 	default = current
+	autoSetupRemote = true
 [pull]
 	default = current
 [github]
