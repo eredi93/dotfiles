@@ -70,3 +70,11 @@ if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null ; then
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# token with access to private intercom repositories
+export INTERCOM_GITHUB_API_TOKEN=$(cat /Users/jacopo/.intercom_github_api_token | tr -d '\n')
+
+# initialize pilot environment variables
+eval $(pilot env)
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"

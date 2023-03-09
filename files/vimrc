@@ -27,7 +27,7 @@ except ImportError:
 
     env = dict(os.environ)
     path = env['PATH']
-    env['PATH'] = '/opt/homebrew/opt/python@3.10/bin:{}'.format(path)
+    env['PATH'] = '/opt/homebrew/opt/python@3.11/bin:{}'.format(path)
     # https://github.com/roxma/vim-hug-neovim-rpc/issues/47
     subprocess.call(
         ['pip3', 'install', 'pynvim'],
@@ -37,7 +37,7 @@ endpy
 
 Plug 'roxma/nvim-yarp' " required for deoplete
 Plug 'roxma/vim-hug-neovim-rpc' " required for deoplete
-Plug 'Shougo/deoplete.nvim'
+Plug 'Shougo/deoplete.nvim', {'do': ':UpdateRemotePlugins', 'on': []}
 Plug 'ervandew/supertab'
 Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
@@ -50,6 +50,7 @@ Plug 'hashivim/vim-terraform'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'gregsexton/gitv', {'on': ['Gitv']}
+Plug 'github/copilot.vim'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'tmux-plugins/vim-tmux'
 Plug 'fatih/vim-go'
@@ -200,6 +201,7 @@ let g:ale_fixers = {
 \}
 
 let b:ale_linters = {
+\  'ruby': ['rubocop'],
 \  'javascript': ['eslint'],
 \  'sass': ['sasslint'],
 \  'html.handlebars': ['embertemplatelint'],
