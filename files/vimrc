@@ -22,17 +22,15 @@ python3 << endpy
 try:
     import neovim
 except ImportError:
+    import sys
     import subprocess
-    import os
 
-    env = dict(os.environ)
-    path = env['PATH']
-    env['PATH'] = '/opt/homebrew/opt/python@3.11/bin:{}'.format(path)
+    python_version_no_micro = f'{sys.version_info.major}.{sys.version_info.minor}'
+
+    python_version = f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}'
+    python_bin = f'/opt/homebrew/Cellar/python@{python_version_no_micro}/{python_version}/bin/python{python_version_no_micro}'
     # https://github.com/roxma/vim-hug-neovim-rpc/issues/47
-    subprocess.call(
-        ['pip3', 'install', 'pynvim'],
-	      env=env
-    )
+    subprocess.call([python_bin, '-Im', 'pip', 'install', '--break-system-packages', 'pynvim'])
 endpy
 
 Plug 'roxma/nvim-yarp' " required for deoplete
