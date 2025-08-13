@@ -72,27 +72,3 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
-# honeycomb observability development key
-export HONEYCOMB_DEVELOPMENT_KEY=$(cat /Users/jacopo/.intercom_honeycomb_api_token | tr -d '\n')
-
-# token with access to private intercom repositories
-export INTERCOM_GITHUB_API_TOKEN=$(cat /Users/jacopo/.intercom_github_api_token | tr -d '\n')
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-# Use Hammer auth
-alias auth='function(){eval $(hammer auth $@);}'
-
-alias assume-role='function(){eval $(hammer auth $@);}'
-
-# Use Interstack v2 for Pilot
-export PILOT_USE_INTERSTACK_V2=true
-
-# initialize pilot environment variables
-eval $(pilot env)
-if [ -e ~/.pilot/stack/.pilot-env ]; then
-  source ~/.pilot/stack/.pilot-env
-fi
