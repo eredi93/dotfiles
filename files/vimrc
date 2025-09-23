@@ -66,6 +66,10 @@ call plug#end()
 set t_Co=256
 set encoding=utf-8
 set number
+set textwidth=0
+set wrapmargin=0
+set wrap
+set linebreak
 set hidden
 set history=100
 set nocompatible
