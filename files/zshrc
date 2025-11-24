@@ -75,3 +75,6 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 # Added by Antigravity
 export PATH="/Users/jacopo.scrinzi/.antigravity/antigravity/bin:$PATH"
+
+# Rust
+export CARGO_NET_GIT_FETCH_WITH_CLI=true
