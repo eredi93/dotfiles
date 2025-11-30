@@ -19,3 +19,5 @@ email = scrinzi.jacopo@gmail.com
 	hooksPath = /Users/jacopo.scrinzi/.git-hooks
 [url "https://github.com/"]
 	insteadOf = git@github.com:
+[filter "strip-notebook-output"]
+	clean = jq '.cells |= map(if .\"cell_type\" == \"code\" then .outputs = [] | .execution_count = null | .metadata = {} else . end)'
