@@ -1,0 +1,12 @@
+font-family = Square Sans Mono
+font-size = 14
+theme = Monokai Classic
+
+window-padding-x = 8
+window-padding-y = 8
+window-decoration = true
+
+cursor-style = block
+cursor-style-blink = false
+
+copy-on-select = clipboard
