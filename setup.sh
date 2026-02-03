@@ -64,6 +64,9 @@ create_symbolic_links() {
 
   for file in "${src_dir}"/*; do
     file_name=$(basename "${file}")
+    # Skip config directory - handled separately
+    if [ "${file_name}" = "config" ]; then continue; fi
+
     dst_file="${dst_dir}/.${file_name}"
 
     if [ ! -d "$(dirname "${dst_file}")" ]; then mkdir "$(dirname "${dst_file}")"; fi
@@ -73,6 +76,23 @@ create_symbolic_links() {
     echo "${file} -> ${dst_file}"
     ln -s "$(realpath "${file}")" "${dst_file}"
   done
+
+  # Handle ~/.config directory symlinks
+  config_src="${src_dir}/config"
+  if [ -d "${config_src}" ]; then
+    mkdir -p "${HOME}/.config"
+    for dir in "${config_src}"/*; do
+      dir_name=$(basename "${dir}")
+      config_dst="${HOME}/.config/${dir_name}"
+      if [ -L "${config_dst}" ]; then
+        rm "${config_dst}"
+      elif [ -e "${config_dst}" ]; then
+        mv "${config_dst}" "${config_dst}.local"
+      fi
+      echo "${dir} -> ${config_dst}"
+      ln -s "$(realpath "${dir}")" "${config_dst}"
+    done
+  fi
 }
 
 install_oh_my_zsh() {
