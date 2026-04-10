@@ -69,6 +69,11 @@ if grep -qE "(Microsoft|WSL)" /proc/version &> /dev/null ; then
   export DISPLAY=localhost:0.0
 fi
 
+# Manually load Ghostty shell integration (Required for Tmux and subshells)
+if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+  source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
+fi
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"

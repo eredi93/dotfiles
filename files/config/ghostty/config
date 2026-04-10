@@ -1,12 +1,26 @@
+# --- Fonts & Aesthetics ---
 font-family = Square Sans Mono
 font-size = 14
 theme = Monokai Classic
 
+# --- Window & UI ---
 window-padding-x = 8
 window-padding-y = 8
 window-decoration = true
 
+# --- Cursor ---
 cursor-style = block
 cursor-style-blink = false
 
-copy-on-select = clipboard
+# --- Shell ---
+# Note: Explicitly set to Zsh since you manually sourced it in .zshrc
+shell-integration = zsh
+
+# --- Claude Code & Background Task Notifications ---
+# Notifies via desktop popup for manual shell commands that take over 30s
+notify-on-command-finish = unfocused
+notify-on-command-finish-action = no-bell,notify
+notify-on-command-finish-after = 30s
+
+# Quietly drops an indicator in the tab title when Claude finishes generating
+bell-features = title,no-audio,no-system,no-attention
