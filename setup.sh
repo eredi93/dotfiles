@@ -7,6 +7,7 @@ set -euo pipefail
 # ----------------------------------------------------------------------
 REPO_DIR=$(dirname "${0}")
 ZSH_PLUGINS="zsh-syntax-highlighting zsh-autosuggestions zsh-history-substring-search"
+WORK_SETUP="${WORK_SETUP:-false}"
 
 # ----------------------------------------------------------------------
 # | Helper Functions                                                   |
@@ -66,6 +67,10 @@ create_symbolic_links() {
     file_name=$(basename "${file}")
     # Skip config directory - handled separately
     if [ "${file_name}" = "config" ]; then continue; fi
+    if [ "${WORK_SETUP}" = true ] && [[ "${file_name}" =~ ^(gitconfig|zshrc)$ ]]; then
+      echo "Skipping ${file_name} (work setup)"
+      continue
+    fi
 
     dst_file="${dst_dir}/.${file_name}"
 
@@ -132,6 +137,13 @@ setup() {
   # Ensure that the following actions
   # are made relative to this file's path.
   cd "${1}" || exit 1
+
+  if [ "${WORK_SETUP}" != true ]; then
+    read -rp "Is this a work setup? (y/N) " answer
+    if [[ "${answer}" =~ ^[Yy]$ ]]; then
+      WORK_SETUP=true
+    fi
+  fi
 
   setup_zsh
   install_oh_my_zsh
